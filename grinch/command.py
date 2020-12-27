@@ -142,15 +142,17 @@ def main(sysargs = sys.argv[1:]):
     if args.json:
         config["json"] = os.path.join(cwd,args.json)
     else:
-        if os.path.exists("export.json.bz2"):
-            os.system("rm export.json.bz2")
-        if os.path.exists("export.json"):
-            os.system("rm export.json")
+        fn = config["filename"]
+        fn_unzipped = ".".join(fn.split(".")[:-1])
+        if os.path.exists(fn):
+            os.system(f"rm {fn}")
+        if os.path.exists(fn_unzipped):
+            os.system(f"rm {fn_unzipped}")
         os.system(f"wget --password {config['password']} "
-                    f"--user {config['username']} {config['gisaid_url']} "
+                    f"--user {config['username']} {config['url']} "
                     "&& "
-                    "bzip2 -d export.json.bz2 ")
-        config["json"] = os.path.join(cwd,"export.json")
+                    f"bzip2 -d {fn} ")
+        config["json"] = os.path.join(cwd,fn_unzipped)
 
     # find the master Snakefile
     snakefile = gfunk.get_snakefile(thisdir)
