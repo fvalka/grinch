@@ -21,6 +21,8 @@ def parse_args():
     parser.add_argument("--command",help="command string", dest="command")
     parser.add_argument("--template",help="template mako html",dest="template")
     parser.add_argument("--report", help="output report file", dest="report")
+    parser.add_argument("--time", help="timestamp", dest="time")
+
     return parser.parse_args()
 
 
@@ -180,7 +182,7 @@ def make_report():
     mytemplate = Template(filename=args.template)
     buf = StringIO()
 
-    ctx = Context(buf, command = args.command, date = today, version = __version__, summary_data = summary_data, lineage_data = ['B.1.1.7','B.1.351'])
+    ctx = Context(buf, command = args.command, timestamp = args.time, date = today, version = __version__, summary_data = summary_data, lineage_data = ['B.1.1.7','B.1.351'])
 
 
     try:

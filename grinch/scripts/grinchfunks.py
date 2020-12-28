@@ -48,6 +48,12 @@ def make_timestamped_outdir(cwd,outdir,config):
 
     return outdir, rel_outdir
 
+def get_timestamp():
+    timestamp = str(datetime.now().isoformat(timespec='minutes')).replace("T"," ") + " GMT"
+    return timestamp
+    
+
+
 def get_outdir(outdir_arg,output_prefix_arg,cwd,config):
     outdir = ''
     

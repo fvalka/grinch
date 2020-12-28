@@ -152,6 +152,7 @@ rule render_report:
         --figdir {config[outdir]}/figures \
         --report {output.report:q} \
         --command {config[command]:q} \
-        --snps {config[snps]:q}
+        --snps {config[snps]:q} \
+        --time {config[timestamp]:q}
         """)
         print(gfunk.green("Grinch report written to:") + f"{output.report}")
