@@ -284,16 +284,23 @@ def cumulative_seqs_over_time(figdir, locations_to_dates,lineage):
     epiweek_counts = Counter(epiweek_lst)
     sorted_epiweeks = OrderedDict(sorted(epiweek_counts.items()))
 
-    fig, ax = plt.subplots(1,1,figsize=(6,4))
+    fig, ax1 = plt.subplots(1,1,figsize=(6,4))
 
-    ax.plot(list(cum_counts.keys()), list(cum_counts.values()),linewidth=5,color="#86b0a6")
-    ax.bar(list(sorted_epiweeks.keys()), list(sorted_epiweeks.values()), color="#86b0a6", width=5)
+    ax1.plot(list(cum_counts.keys()), list(cum_counts.values()))
 
+    ax2 = ax1.twinx()
+    ax2.bar(list(sorted_epiweeks.keys()), list(sorted_epiweeks.values()), color="#86b0a6", width=5)
 
-    plt.xticks(rotation=90)
-    plt.xlabel("Date")
-    plt.ylabel("Sequence count")
-    [ax.spines[loc].set_visible(False) for loc in ['top','right']]
+    ylims = (0,4000) 
+    ax1.spines['top'].set_visible(False)
+    ax2.spines['top'].set_visible(False)
+
+    ax1.xaxis.set_tick_params(rotation=90)
+    ax1.set_xlabel("Date")
+    ax1.set_ylabel("Sequence count")
+    ax2.set_ylabel("New sequences")
+    ax2.set_ylim(ylims)
+    
     plt.savefig(os.path.join(figdir,f"Cumulative_sequence_count_over_time_{lineage}.svg"), format='svg', bbox_inches='tight')
 
 
