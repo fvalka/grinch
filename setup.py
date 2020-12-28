@@ -29,7 +29,8 @@ setup(name='grinch',
             "adjustText>=0.7.3",
             "tabulate>=0.8.7",
             "snipit>=1.0.3",
-            "seaborn>=0.10.1"
+            "seaborn>=0.10.1",
+            "epiweeks>=2.1.2"
         ],
 
       description='B.1.1.7 reporting tool',

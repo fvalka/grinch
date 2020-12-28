@@ -2,8 +2,11 @@ import geopandas
 import csv
 from collections import defaultdict
 from collections import Counter
+from collections import OrderedDict
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+from epiweeks import Week
+
 
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import pandas as pd
@@ -262,6 +265,8 @@ def plot_frequency_new_sequences(figdir, locations_to_dates, country_new_seqs, l
 def cumulative_seqs_over_time(figdir, locations_to_dates,lineage):
 
     dates = []
+    epiweek_lst = []
+
     for k,v in locations_to_dates.items():
         dates.extend(v)
         
@@ -273,9 +278,17 @@ def cumulative_seqs_over_time(figdir, locations_to_dates,lineage):
         seq_number = seq_number + value
         cum_counts[date] = seq_number
 
+    for i in dates:
+        epiweek_lst.append(Week.fromdate(i).startdate())
+    
+    epiweek_counts = Counter(epiweek_lst)
+    sorted_epiweeks = OrderedDict(sorted(epiweek_counts.items()))
+
     fig, ax = plt.subplots(1,1,figsize=(6,4))
 
-    plt.plot(list(cum_counts.keys()), list(cum_counts.values()),linewidth=5,color="#86b0a6")
+    ax.plot(list(cum_counts.keys()), list(cum_counts.values()),linewidth=5,color="#86b0a6")
+    ax.bar(list(sorted_epiweeks.keys()), list(sorted_epiweeks.values()), color="#86b0a6", width=5)
+
 
     plt.xticks(rotation=90)
     plt.xlabel("Date")
