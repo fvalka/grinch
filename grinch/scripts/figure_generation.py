@@ -177,24 +177,20 @@ def plot_bars(figdir, locations_to_dates, lineage):
     y = []
     text_labels = []
     counts = []
-    sortable_data = {}
+    sortable_data = []
+
     for k in locations_to_dates:
+
         count = len(locations_to_dates[k])
         counts.append(count)
-        if k.upper=="UNITED_KINGDOM":
-            x.append(k.replace("_", " ").title())
-            y.append(np.log10(count))
-            text_labels.append(count)
-        else:
-            sortable_data[count] = k
+        sortable_data.append((count, k))
     
-    
-    for k in sorted(sortable_data, reverse=True):
-        location = sortable_data[k]
-        text_labels.append(k)
-        y.append(np.log10(k))
+    for k in sorted(sortable_data, key = lambda x : x[0], reverse=True):
+        count,location=k
+        print(location)
+        text_labels.append(count)
+        y.append(np.log10(count))
         x.append(location.replace("_", " ").title())
-
 
     fig, ax = plt.subplots(1,1, figsize=(5,3), frameon=False)
 
@@ -216,6 +212,8 @@ def plot_bars(figdir, locations_to_dates, lineage):
     plt.xticks(rotation=90)
 
     plt.savefig(os.path.join(figdir,f"Sequence_count_per_country_{lineage}.svg"), format='svg', bbox_inches='tight')
+
+# def time_series_frequency_sliding_window():
 
 def plot_frequency_new_sequences(figdir, locations_to_dates, country_new_seqs, loc_to_earliest_date, lineage):
 
@@ -257,6 +255,8 @@ def plot_frequency_new_sequences(figdir, locations_to_dates, country_new_seqs, l
                 ha='center', va='bottom', size=12, rotation=90)
 
     plt.savefig(os.path.join(figdir,f"Frequency_{lineage}_in_sequences_produced_since_first_new_variant_reported_per_country.svg"), format='svg', bbox_inches='tight')
+
+
 
 
 def cumulative_seqs_over_time(figdir, locations_to_dates,lineage):
