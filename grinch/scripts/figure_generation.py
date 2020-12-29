@@ -341,30 +341,22 @@ def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earlies
     frequency_over_time = defaultdict(dict)
     counts_over_time = defaultdict(dict)
 
-    for country, all_dates in locations_to_dates.items():
+    for country, all_dates in locations_to_dates.items(): #a dictionary with locations:[dates of variant sequences]
 
         day_one = loc_to_earliest_date[country]
         date_dict = {}
         count_date_dict = {}
 
-        overall_counts = Counter(country_dates[country])
-        voc_counts = Counter(all_dates)
-        
-        # if country == "NETHERLANDS":
-        #     print("overall")
-        #     for k,v in sorted(overall_counts.items()):
-        #         print(k,v)
-        #     print("voc counts")
-        #     for k,v in sorted(voc_counts.items()):
-        #         print(k,v)
+        overall_counts = Counter(country_dates[country]) #counter of all sequences since the variant was first sampled in country
+        voc_counts = Counter(all_dates) #so get a counter of variant sequences
 
-        for i in all_dates:
+        for i in all_dates: #looping through all of the dates with a variant on
             day_frequency = voc_counts[i]/overall_counts[i]
-            date_dict[i] = day_frequency
+            date_dict[i] = day_frequency #key=date, value=frequency on that day
 
-            count_date_dict[i] = voc_counts[i]
+            count_date_dict[i] = voc_counts[i] #key=date, value=count on that day
 
-            
+        #fill in days from first date of variant to most recent date of variant
         date_range = (max(date_dict.keys())-day_one).days
         for day in (day_one + dt.timedelta(n) for n in range(1,date_range)):
             if day not in date_dict.keys():
@@ -379,7 +371,7 @@ def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earlies
         counts_over_time[country.replace("_"," ").title()] = OrderedDict(sorted(count_date_dict.items()))
 
     frequency_df_dict = defaultdict(list)
-    for k,v in frequency_over_time.items():
+    for k,v in frequency_over_time.items(): #key=country, value=dict of dates to frequencies
         for k2, v2 in v.items():
             frequency_df_dict['country'].append(k)
             frequency_df_dict["date"].append(k2)
@@ -391,7 +383,7 @@ def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earlies
     fig, ax = plt.subplots(figsize=(15,7))
 
     for i,v in frequency_over_time.items():
-        if len(v) > 10:
+        if len(v) > 10: #so we do this for countries with more than ten days between the first variant sequence and last variant sequence
             relevant = frequency_df.loc[frequency_df["country"] == i]
             y = relevant['frequency'].rolling(7).mean()    
             x = list(frequency_df.loc[frequency_df["country"] == i]["date"])
@@ -405,7 +397,7 @@ def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earlies
     plt.savefig(os.path.join(figdir,f"frequency_rolling_{lineage}.svg"), format='svg', bbox_inches='tight')
 
     count_df_dict = defaultdict(list)
-    for k,v in counts_over_time.items():
+    for k,v in counts_over_time.items():#key=country, value=dict of dates to counts
         for k2, v2 in v.items():
             count_df_dict['country'].append(k)
             count_df_dict["date"].append(k2)
