@@ -340,7 +340,8 @@ def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earlies
 
     frequency_over_time = defaultdict(dict)
     counts_over_time = defaultdict(dict)
-
+    muted_pal = sns.cubehelix_palette(n_colors=10)
+    muted_pal = sns.color_palette("muted")
     for country, all_dates in locations_to_dates.items():
 
         day_one = loc_to_earliest_date[country]
@@ -388,21 +389,24 @@ def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earlies
 
     frequency_df = pd.DataFrame(frequency_df_dict)
 
-    fig, ax = plt.subplots(figsize=(15,7))
-
+    fig, ax = plt.subplots(figsize=(7,4))
+    c = 0
     for i,v in frequency_over_time.items():
         if len(v) > 10:
+            c +=1
             relevant = frequency_df.loc[frequency_df["country"] == i]
             y = relevant['frequency'].rolling(7).mean()    
             x = list(frequency_df.loc[frequency_df["country"] == i]["date"])
 
-            plt.plot(x,y, label = i)
+            plt.plot(x,y, label = i, color=muted_pal[c],linewidth=3)
+            [ax.spines[loc].set_visible(False) for loc in ['top','right']]
+            plt.xticks(rotation=90)
 
-    plt.legend()
+    plt.legend(frameon=False)
     plt.ylabel("Frequency (7 day rolling average)")
     plt.xlabel("Date")
 
-    plt.savefig(os.path.join(figdir,f"frequency_rolling_{lineage}.svg"), format='svg', bbox_inches='tight')
+    plt.savefig(os.path.join(figdir,f"Rolling_average_{lineage}_frequency_per_country.svg"), format='svg', bbox_inches='tight')
 
     count_df_dict = defaultdict(list)
     for k,v in counts_over_time.items():
@@ -412,25 +416,27 @@ def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earlies
             count_df_dict["count"].append(np.log10(v2))
             
 
-
     count_df = pd.DataFrame(count_df_dict)
-    fig, ax = plt.subplots(figsize=(15,7))
-
+    fig, ax = plt.subplots(figsize=(7,4))
+    c = 0
     for i,v in counts_over_time.items():
         if len(v) > 10:
+            c+=1
             relevant = count_df.loc[count_df["country"] == i]
             y = relevant['count'].rolling(7).mean()    
             x = list(count_df.loc[count_df["country"] == i]["date"])
 
-            plt.plot(x,y, label = i)
+            plt.plot(x,y, label = i, color=muted_pal[c],linewidth=3)
+            [ax.spines[loc].set_visible(False) for loc in ['top','right']]
+            plt.xticks(rotation=90)
 
-    plt.legend()
+    plt.legend(frameon=False)
     plt.ylabel("Count (7 day rolling average)")
     plt.xlabel("Date")
     yticks = ax.get_yticks()
     ax.set_yticklabels([(int(10**ytick)) for ytick in yticks])
 
-    plt.savefig(os.path.join(figdir,f"count_rolling_{lineage}.svg"), format='svg', bbox_inches='tight')
+    plt.savefig(os.path.join(figdir,f"{lineage}_count_per_country.svg"), format='svg', bbox_inches='tight')
 
 
 def cumulative_seqs_over_time(figdir, locations_to_dates,lineage):
