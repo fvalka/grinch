@@ -154,6 +154,8 @@ def main(sysargs = sys.argv[1:]):
                     f"bzip2 -d {fn} ")
         config["json"] = os.path.join(cwd,fn_unzipped)
 
+    config["timestamp"] = gfunk.get_timestamp()
+    
     # find the master Snakefile
     snakefile = gfunk.get_snakefile(thisdir)
 
