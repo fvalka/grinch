@@ -457,20 +457,21 @@ def cumulative_seqs_over_time(figdir, locations_to_dates,lineage):
 
     fig, ax1 = plt.subplots(1,1,figsize=(6,4))
 
-    ax1.plot(list(cum_counts.keys()), list(cum_counts.values()))
+    
 
+    
+    ax1.bar(list(sorted_epiweeks.keys()), list(sorted_epiweeks.values()), color="#86b0a6", width=5)
     ax2 = ax1.twinx()
-    ax2.bar(list(sorted_epiweeks.keys()), list(sorted_epiweeks.values()), color="#86b0a6", width=5)
-
-    ylims = (0,4000) 
+    ax2.plot(list(cum_counts.keys()), list(cum_counts.values()),linewidth=3,color="dimgrey")
+    # ylims = (0,4000) 
     ax1.spines['top'].set_visible(False)
     ax2.spines['top'].set_visible(False)
 
     ax1.xaxis.set_tick_params(rotation=90)
     ax1.set_xlabel("Date")
+    ax2.set_ylabel("Total")
     ax1.set_ylabel("Sequence count")
-    ax2.set_ylabel("New sequences")
-    ax2.set_ylim(ylims)
+    # ax2.set_ylim(ylims)
     
     plt.savefig(os.path.join(figdir,f"Cumulative_sequence_count_over_time_{lineage}.svg"), format='svg', bbox_inches='tight')
 
