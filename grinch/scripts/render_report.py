@@ -116,7 +116,9 @@ def make_summary_data(metadata,fig_dir,snp_dict):
                         f"Date_of_earliest_{lineage}_detected.svg",
                         f"Map_of_{lineage}_sequence_counts.svg",
                         f"Sequence_count_per_country_{lineage}.svg",
-                        f"Frequency_{lineage}_in_sequences_produced_since_first_new_variant_reported_per_country.svg"
+                        f"Frequency_{lineage}_in_sequences_produced_since_first_new_variant_reported_per_country.svg",
+                        f"count_rolling_{lineage}.svg",
+                        f"frequency_rolling_{lineage}.svg"
                         ]
 
 
