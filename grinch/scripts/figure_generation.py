@@ -16,16 +16,15 @@ import numpy as np
 import math
 import os
 
+# #for testing
 # import argparse
-
 # parser = argparse.ArgumentParser()
 # parser.add_argument("--map")
 # parser.add_argument("--figdir")
 # parser.add_argument("--metadata")
-
 # args = parser.parse_args()
-
 # lineages_of_interest = ["B.1.1.7", "B.1.351"]
+# ###
 
 plt.rcParams.update({'font.size': 10})
 
@@ -78,6 +77,7 @@ def make_dataframe(metadata, conversion_dict2, omitted, lineage_of_interest, cou
     locations_to_dates = defaultdict(list)
     country_to_new_country = {}
     country_new_seqs = {}
+    country_dates = defaultdict(list)
 
     with open(metadata) as f:
         data = csv.DictReader(f)
@@ -128,8 +128,10 @@ def make_dataframe(metadata, conversion_dict2, omitted, lineage_of_interest, cou
                         country_new_seqs[new_country] = 1
                     else:
                         country_new_seqs[new_country] += 1
+                    country_dates[new_country].append(date)
 
-    return with_info, locations_to_dates, country_new_seqs, loc_to_earliest_date
+
+    return with_info, locations_to_dates, country_new_seqs, loc_to_earliest_date, country_dates
 
 def plot_date_map(figdir, with_info, lineage):
 
@@ -192,7 +194,6 @@ def plot_bars(figdir, locations_to_dates, lineage):
     
     for k in sorted(sortable_data, key = lambda x : x[0], reverse=True):
         count,location=k
-        print(location)
         text_labels.append(count)
         y.append(np.log10(count))
         x.append(location.replace("_", " ").title())
@@ -335,7 +336,101 @@ def plot_frequency_new_sequences(figdir, locations_to_dates, country_new_seqs, l
 
     plt.savefig(os.path.join(figdir,f"Frequency_{lineage}_in_sequences_produced_since_first_new_variant_reported_per_country.svg"), format='svg', bbox_inches='tight')
 
+def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earliest_date, country_dates, lineage):
 
+    frequency_over_time = defaultdict(dict)
+    counts_over_time = defaultdict(dict)
+
+    for country, all_dates in locations_to_dates.items():
+
+        day_one = loc_to_earliest_date[country]
+        date_dict = {}
+        count_date_dict = {}
+
+        overall_counts = Counter(country_dates[country])
+        voc_counts = Counter(all_dates)
+        
+        # if country == "NETHERLANDS":
+        #     print("overall")
+        #     for k,v in sorted(overall_counts.items()):
+        #         print(k,v)
+        #     print("voc counts")
+        #     for k,v in sorted(voc_counts.items()):
+        #         print(k,v)
+
+        for i in all_dates:
+            day_frequency = voc_counts[i]/overall_counts[i]
+            date_dict[i] = day_frequency
+
+            count_date_dict[i] = voc_counts[i]
+
+            
+        date_range = (max(date_dict.keys())-day_one).days
+        for day in (day_one + dt.timedelta(n) for n in range(1,date_range)):
+            if day not in date_dict.keys():
+                date_dict[day] = date_dict[day-dt.timedelta(1)]
+
+        count_date_range = (max(count_date_dict.keys())-day_one).days
+        for day in (day_one + dt.timedelta(n) for n in range(1,count_date_range)):
+            if day not in count_date_dict.keys():
+                count_date_dict[day] = count_date_dict[day-dt.timedelta(1)]
+                    
+        frequency_over_time[country.replace("_"," ").title()] = OrderedDict(sorted(date_dict.items())) 
+        counts_over_time[country.replace("_"," ").title()] = OrderedDict(sorted(count_date_dict.items()))
+
+    frequency_df_dict = defaultdict(list)
+    for k,v in frequency_over_time.items():
+        for k2, v2 in v.items():
+            frequency_df_dict['country'].append(k)
+            frequency_df_dict["date"].append(k2)
+            frequency_df_dict["frequency"].append(v2)
+            
+
+    frequency_df = pd.DataFrame(frequency_df_dict)
+
+    fig, ax = plt.subplots(figsize=(15,7))
+
+    for i,v in frequency_over_time.items():
+        if len(v) > 10:
+            relevant = frequency_df.loc[frequency_df["country"] == i]
+            y = relevant['frequency'].rolling(7).mean()    
+            x = list(frequency_df.loc[frequency_df["country"] == i]["date"])
+
+            plt.plot(x,y, label = i)
+
+    plt.legend()
+    plt.ylabel("Frequency (7 day rolling average)")
+    plt.xlabel("Date")
+
+    plt.savefig(os.path.join(figdir,f"frequency_rolling_{lineage}.svg"), format='svg', bbox_inches='tight')
+
+    count_df_dict = defaultdict(list)
+    for k,v in counts_over_time.items():
+        for k2, v2 in v.items():
+            count_df_dict['country'].append(k)
+            count_df_dict["date"].append(k2)
+            count_df_dict["count"].append(np.log10(v2))
+            
+
+
+    count_df = pd.DataFrame(count_df_dict)
+    fig, ax = plt.subplots(figsize=(15,7))
+
+    for i,v in counts_over_time.items():
+        if len(v) > 10:
+            relevant = count_df.loc[count_df["country"] == i]
+            y = relevant['count'].rolling(7).mean()    
+            x = list(count_df.loc[count_df["country"] == i]["date"])
+
+            plt.plot(x,y, label = i)
+
+    plt.legend()
+    plt.ylabel("Count (7 day rolling average)")
+    plt.xlabel("Date")
+    yticks = ax.get_yticks()
+    ax.set_yticklabels([(int(10**ytick)) for ytick in yticks])
+
+    plt.savefig(os.path.join(figdir,f"count_rolling_{lineage}.svg"), format='svg', bbox_inches='tight')
 
 
 def cumulative_seqs_over_time(figdir, locations_to_dates,lineage):
@@ -388,7 +483,7 @@ def plot_figures(world_map_file, figdir, metadata, lineages_of_interest,flight_d
     
 
     for lineage in lineages_of_interest:
-        with_info, locations_to_dates, country_new_seqs, loc_to_earliest_date = make_dataframe(metadata, conversion_dict2, omitted, lineage, countries, world_map)
+        with_info, locations_to_dates, country_new_seqs, loc_to_earliest_date, country_dates = make_dataframe(metadata, conversion_dict2, omitted, lineage, countries, world_map)
 
         if lineage == "B.1.1.7":
             flight_data_plot(figdir, flight_data,locations_to_dates)
@@ -398,6 +493,7 @@ def plot_figures(world_map_file, figdir, metadata, lineages_of_interest,flight_d
         plot_bars(figdir, locations_to_dates, lineage)
         cumulative_seqs_over_time(figdir,locations_to_dates,lineage)
         plot_frequency_new_sequences(figdir, locations_to_dates, country_new_seqs, loc_to_earliest_date, lineage)
+        plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earliest_date, country_dates, lineage)
 
 
 # plot_figures(args.map, args.figdir, args.metadata, lineages_of_interest)
