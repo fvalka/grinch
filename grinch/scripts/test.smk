@@ -11,7 +11,7 @@ rule render_report:
     output:
         report = os.path.join(config["outdir"],"report", f"{output_prefix}.html")
     run:
-        fig_gen.plot_figures(config["world_map_file"], config["figdir"], input.metadata, config["lineages_of_interest"])
+        fig_gen.plot_figures(config["world_map_file"], config["figdir"], input.metadata, config["lineages_of_interest"],config["flight_data"])
         print(f"Generated the figure files  in {config['figdir']}")
         shell(
         """
@@ -21,7 +21,8 @@ rule render_report:
         --figdir {config[outdir]}/figures \
         --report {output.report:q} \
         --command {config[command]:q} \
-        --snps {config[snps]:q}
+        --snps {config[snps]:q} \
+        --time {config[timestamp]:q}
         """)
         print(gfunk.green("Grinch report written to:") + f"{output.report}")
         
