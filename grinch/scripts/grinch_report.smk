@@ -138,11 +138,12 @@ rule grab_metadata:
 rule render_report:
     input:
         metadata = rules.grab_metadata.output.metadata,
-        template = config["template"]
+        template = config["template"],
+        flight_data = config["flight_data"]
     output:
         report = os.path.join(config["outdir"],"report", f"{output_prefix}.html")
     run:
-        fig_gen.plot_figures(config["world_map_file"], config["figdir"], input.metadata, config["lineages_of_interest"])
+        fig_gen.plot_figures(config["world_map_file"], config["figdir"], input.metadata, config["lineages_of_interest"], config["flight_data"])
 
         shell(
         """

@@ -214,7 +214,7 @@
         float:right
       }
       .figure-container{
-      max-height: 600px;
+      max-height: 700px;
       background-size: contain;
     }
 
@@ -549,12 +549,13 @@
         <p>The number of ticketed origin-to-destination journeys from London airports to countries outside the United Kingdom during October 2020.</p> 
         <p>Colours indicate numbers of published genomes of B.1.1.7 deposited on GISAID as of December 26, 2020. Grey bars indicate countries that have reported the presence of the variant but have not yet published B.1.1.7 sequences on GISAID as of the 26-Dec-2020. White bars indicate countries with no reports of B.1.1.7.</p> 
         <p>Flight data come from the International Air Transportation Association that capture anonymized, passenger-level flight itinerary data, comprising both commercial flights and scheduled charter flights. These data account for ~90% of global air travel volumes, with the remaining volumes modelled using market intelligence. We report data from destinations including >5,000 passengers.</p>
-        <p>Figure by Kamran Khan, Isaac Bogoch, Alexander Watts, Oliver Pybus, Moritz Kraemer</p>
+        <p>Data from Kamran Khan, Isaac Bogoch, Alexander Watts, Oliver Pybus, Moritz Kraemer</p>
                <div class=figure-container>
-                  <img src="assets/images/Flights_Genomes_26122020.png" alt="Flights from UK" />
+                  ${flight_figure}
               </div>
+              <br>
         </div>
-
+        <div></div>
         <script>
           function myFunction(myInput, myTable) {
             var input, filter, table, tr, td, i, txtValue;

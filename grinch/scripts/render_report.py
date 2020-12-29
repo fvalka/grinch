@@ -12,6 +12,7 @@ from io import StringIO
 import json
 import csv
 
+import sys
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Report generator script")
@@ -32,9 +33,38 @@ def get_svg_as_string(fig_dir,fig_name):
     if not os.path.isfile(fig_file):
         print("not a real file", fig_file)
         sys.exit(-1)
+
     with open(fig_file,"r") as f:
         for l in f:
             fig_string += l.rstrip("\n")
+    
+    height = False
+    width = False
+    original_preamble = fig_string.split("<metadata>")[0]
+    preamble = fig_string.split('<svg')[1].split("<metadata>")[0]
+    
+    replace_dict = {}
+    for i in preamble.split(" "):
+        if i.startswith("height="):
+            new_i = ""
+            if fig_name.startswith("Sequence"):
+                new_i = "height=50%"
+            elif fig_name.startswith("Air"):
+                new_i = "height=80%"
+            replace_dict[i] = new_i
+            height = True
+        if width== False:
+            if i.startswith("width="):
+                new_i = "width=80%"
+                if fig_name.startswith("Sequence") or fig_name.startswith("Cumulative") or fig_name.startswith("Frequency"):
+                    new_i = "width=40%"
+                replace_dict[i] = new_i
+    
+    for i in replace_dict:
+        preamble= preamble.replace(i, replace_dict[i])
+    
+    fig_string = "<svg" + fig_string.replace(original_preamble, preamble)
+
     return fig_string
 
 def make_summary_data(metadata,fig_dir,snp_dict):
@@ -85,6 +115,8 @@ def make_summary_data(metadata,fig_dir,snp_dict):
                     if travel_history:
                         summary_dict[lineage]["Travel history"][travel_history]+=1
 
+    flight_figure = get_svg_as_string(fig_dir,"Air_traffic_from_UK_by_destination.svg")
+
     for lineage in summary_dict:
 
         travel = summary_dict[lineage]["Travel history"]
@@ -121,37 +153,10 @@ def make_summary_data(metadata,fig_dir,snp_dict):
                         f"frequency_rolling_{lineage}.svg"
                         ]
 
-
-
         for fig_name in figure_names:
             fig_count+=1
             fig_string = get_svg_as_string(fig_dir,fig_name)
 
-            height = False
-            width = False
-            original_preamble = fig_string.split("<metadata>")[0]
-            preamble = fig_string.split('<svg')[1].split("<metadata>")[0]
-            
-            replace_dict = {}
-            for i in preamble.split(" "):
-                if i.startswith("height="):
-                    new_i = ""
-                    if fig_name.startswith("Sequence"):
-                        new_i = "height=50%"
-                    replace_dict[i] = new_i
-                    height = True
-                if width== False:
-                    if i.startswith("width="):
-                        new_i = "width=80%"
-                        if fig_name.startswith("Sequence") or fig_name.startswith("Cumulative") or fig_name.startswith("Frequency"):
-                            new_i = "width=40%"
-                        replace_dict[i] = new_i
-            
-            for i in replace_dict:
-                preamble= preamble.replace(i, replace_dict[i])
-            
-            fig_string = "<svg" + fig_string.replace(original_preamble, preamble)
-            
             fig_stem = ".".join(fig_name.split(".")[:-1])
             fig_stem = fig_stem.replace("_"," ")
             summary_dict[lineage]["figures"].append({
@@ -165,7 +170,7 @@ def make_summary_data(metadata,fig_dir,snp_dict):
         rows.append(summary_dict[lineage])
     for row in rows:
         print(row["Lineage"]) 
-    return rows
+    return rows, flight_figure
 
 def make_report():
 
@@ -177,14 +182,14 @@ def make_report():
         lineage,snps = i.split("=")
         snp_dict[lineage]= snps.replace(";","<br> ")
 
-    summary_data = make_summary_data(args.metadata,args.figdir,snp_dict)
+    summary_data, flight_figure = make_summary_data(args.metadata,args.figdir,snp_dict)
 
     today = date.today()
     
     mytemplate = Template(filename=args.template)
     buf = StringIO()
 
-    ctx = Context(buf, command = args.command, timestamp = args.time, date = today, version = __version__, summary_data = summary_data, lineage_data = ['B.1.1.7','B.1.351'])
+    ctx = Context(buf, command = args.command, timestamp = args.time, date = today, version = __version__, summary_data = summary_data, lineage_data = ['B.1.1.7','B.1.351'],flight_figure=flight_figure)
 
 
     try:
