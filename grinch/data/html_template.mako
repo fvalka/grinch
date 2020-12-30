@@ -485,7 +485,7 @@
     
     <br>
     <h3><strong>Data source and processing</strong></h3>
-    <p> All whole genome SARS-CoV-2 sequences were pulled from GISAID at ${timestamp}. The genomes were de-duplicated based on GISAID sequence name – note that the publically available metadata may not fully allow us to de-duplicate by patient. Full data processing pipeline found <a href="https://github.com/cov-lineages/grinch" style="color:#86b0a6">here</a>.</p> 
+    <p> This report is recent as of ${timestamp}. All SARS-CoV-2 sequences were downloaded from GISAID and genomes were de-duplicated based on GISAID sequence name – note that the publically available metadata may not fully allow us to de-duplicate by patient. Full data processing pipeline found <a href="https://github.com/cov-lineages/grinch" style="color:#86b0a6">here</a>.</p> 
     <p>The sequences were then assigned lineages with pangolin v2.1.3, pangoLEARN version 2020-12-17.</p>
     <p> Pangolin assigns B.1.1.7 to sequences with more than 4 of the 17 defining B.1.1.7 SNPs – defined  <a href="https://virological.org/t/preliminary-genomic-characterisation-of-an-emergent-sars-cov-2-lineage-in-the-uk-defined-by-a-novel-set-of-spike-mutations/563" style="color:#86b0a6">here</a> – and B.1.351 to any sequences with more than 3 of the 5 defining B.1.351 SNPs.</p>
 
@@ -547,7 +547,7 @@
         <div></div>
         <h3><strong>Figure 11</strong> | Air traffic from UK by destination</h3>              
         <p>The number of ticketed origin-to-destination journeys from London airports to countries outside the United Kingdom during October 2020.</p> 
-        <p>Colours indicate numbers of published genomes of B.1.1.7 deposited on GISAID as of December 26, 2020. Grey bars indicate countries that have reported the presence of the variant but have not yet published B.1.1.7 sequences on GISAID as of the 26-Dec-2020. White bars indicate countries with no reports of B.1.1.7.</p> 
+        <p>Colours indicate numbers of published genomes of B.1.1.7 deposited on GISAID. Grey bars indicate countries that have reported the presence of the variant but have not yet published B.1.1.7 sequences on GISAID. White bars indicate countries with no reports of B.1.1.7.</p> 
         <p>Flight data come from the International Air Transportation Association that capture anonymized, passenger-level flight itinerary data, comprising both commercial flights and scheduled charter flights. These data account for ~90% of global air travel volumes, with the remaining volumes modelled using market intelligence. We report data from destinations including >5,000 passengers.</p>
         <p>Data from Kamran Khan, Isaac Bogoch, Alexander Watts, Oliver Pybus, Moritz Kraemer</p>
                <div class=figure-container>
