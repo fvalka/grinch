@@ -408,7 +408,7 @@ def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earlies
         for k2, v2 in v.items():
             count_df_dict['country'].append(k)
             count_df_dict["date"].append(k2)
-            count_df_dict["count"].append(np.log10(v2+1))
+            count_df_dict["count"].append(np.log10(v2+1)) #pseudocounting to deal with zeroes
             
 
     count_df = pd.DataFrame(count_df_dict)
