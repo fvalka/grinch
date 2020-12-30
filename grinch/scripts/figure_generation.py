@@ -487,7 +487,7 @@ def plot_figures(world_map_file, figdir, metadata, lineages_of_interest,flight_d
     for lineage in lineages_of_interest:
         with_info, locations_to_dates, country_new_seqs, loc_to_earliest_date, country_dates = make_dataframe(metadata, conversion_dict2, omitted, lineage, countries, world_map)
 
-       if lineage == "B.1.1.7":
+        if lineage == "B.1.1.7":
            flight_data_plot(figdir, flight_data,locations_to_dates)
 
         plot_date_map(figdir, with_info, lineage)
