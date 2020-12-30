@@ -341,7 +341,9 @@ def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earlies
     frequency_over_time = defaultdict(dict)
     counts_over_time = defaultdict(dict)
 
-    for country, all_dates in locations_to_dates.items(): #a dictionary with locations:[dates of variant sequences]
+    muted_pal = sns.cubehelix_palette(n_colors=10)
+    muted_pal = sns.color_palette("muted")
+    for country, all_dates in locations_to_dates.items():#a dictionary with locations:[dates of variant sequences]
 
         day_one = loc_to_earliest_date[country]
         date_dict = {}
@@ -380,21 +382,24 @@ def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earlies
 
     frequency_df = pd.DataFrame(frequency_df_dict)
 
-    fig, ax = plt.subplots(figsize=(15,7))
-
+    fig, ax = plt.subplots(figsize=(7,4))
+    c = 0
     for i,v in frequency_over_time.items():
-        if len(v) > 10: #so we do this for countries with more than ten days between the first variant sequence and last variant sequence
+        if len(v) > 10:#so we do this for countries with more than ten days between the first variant sequence and last variant sequence
+            c +=1
             relevant = frequency_df.loc[frequency_df["country"] == i]
             y = relevant['frequency'].rolling(7).mean()    
             x = list(frequency_df.loc[frequency_df["country"] == i]["date"])
 
-            plt.plot(x,y, label = i)
+            plt.plot(x,y, label = i, color=muted_pal[c],linewidth=3)
+            [ax.spines[loc].set_visible(False) for loc in ['top','right']]
+            plt.xticks(rotation=90)
 
-    plt.legend()
+    plt.legend(frameon=False)
     plt.ylabel("Frequency (7 day rolling average)")
     plt.xlabel("Date")
 
-    plt.savefig(os.path.join(figdir,f"frequency_rolling_{lineage}.svg"), format='svg', bbox_inches='tight')
+    plt.savefig(os.path.join(figdir,f"Rolling_average_{lineage}_frequency_per_country.svg"), format='svg', bbox_inches='tight')
 
     count_df_dict = defaultdict(list)
     for k,v in counts_over_time.items():#key=country, value=dict of dates to counts
@@ -404,25 +409,27 @@ def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earlies
             count_df_dict["count"].append(np.log10(v2))
             
 
-
     count_df = pd.DataFrame(count_df_dict)
-    fig, ax = plt.subplots(figsize=(15,7))
-
+    fig, ax = plt.subplots(figsize=(7,4))
+    c = 0
     for i,v in counts_over_time.items():
         if len(v) > 10:
+            c+=1
             relevant = count_df.loc[count_df["country"] == i]
             y = relevant['count'].rolling(7).mean()    
             x = list(count_df.loc[count_df["country"] == i]["date"])
 
-            plt.plot(x,y, label = i)
+            plt.plot(x,y, label = i, color=muted_pal[c],linewidth=3)
+            [ax.spines[loc].set_visible(False) for loc in ['top','right']]
+            plt.xticks(rotation=90)
 
-    plt.legend()
+    plt.legend(frameon=False)
     plt.ylabel("Count (7 day rolling average)")
     plt.xlabel("Date")
     yticks = ax.get_yticks()
     ax.set_yticklabels([(int(10**ytick)) for ytick in yticks])
 
-    plt.savefig(os.path.join(figdir,f"count_rolling_{lineage}.svg"), format='svg', bbox_inches='tight')
+    plt.savefig(os.path.join(figdir,f"{lineage}_count_per_country.svg"), format='svg', bbox_inches='tight')
 
 
 def cumulative_seqs_over_time(figdir, locations_to_dates,lineage):
@@ -449,20 +456,21 @@ def cumulative_seqs_over_time(figdir, locations_to_dates,lineage):
 
     fig, ax1 = plt.subplots(1,1,figsize=(6,4))
 
-    ax1.plot(list(cum_counts.keys()), list(cum_counts.values()))
+    
 
+    
+    ax1.bar(list(sorted_epiweeks.keys()), list(sorted_epiweeks.values()), color="#86b0a6", width=5)
     ax2 = ax1.twinx()
-    ax2.bar(list(sorted_epiweeks.keys()), list(sorted_epiweeks.values()), color="#86b0a6", width=5)
-
-    ylims = (0,4000) 
+    ax2.plot(list(cum_counts.keys()), list(cum_counts.values()),linewidth=3,color="dimgrey")
+    # ylims = (0,4000) 
     ax1.spines['top'].set_visible(False)
     ax2.spines['top'].set_visible(False)
 
     ax1.xaxis.set_tick_params(rotation=90)
     ax1.set_xlabel("Date")
+    ax2.set_ylabel("Total")
     ax1.set_ylabel("Sequence count")
-    ax2.set_ylabel("New sequences")
-    ax2.set_ylim(ylims)
+    # ax2.set_ylim(ylims)
     
     plt.savefig(os.path.join(figdir,f"Cumulative_sequence_count_over_time_{lineage}.svg"), format='svg', bbox_inches='tight')
 
