@@ -16,15 +16,15 @@ import numpy as np
 import math
 import os
 
-# #for testing
-# import argparse
-# parser = argparse.ArgumentParser()
-# parser.add_argument("--map")
-# parser.add_argument("--figdir")
-# parser.add_argument("--metadata")
-# args = parser.parse_args()
-# lineages_of_interest = ["B.1.1.7", "B.1.351"]
-# ###
+#for testing
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("--map")
+parser.add_argument("--figdir")
+parser.add_argument("--metadata")
+args = parser.parse_args()
+lineages_of_interest = ["B.1.1.7", "B.1.351"]
+###
 
 plt.rcParams.update({'font.size': 10})
 
@@ -434,9 +434,9 @@ def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earlies
     plt.legend(frameon=False,fontsize=8)
     plt.ylabel("Count (7 day rolling average)")
     plt.xlabel("Date")
+    ax.set_ylim(bottom=0)
     yticks = ax.get_yticks()
     ax.set_yticklabels([(int(10**ytick)) for ytick in yticks])
-    ax.set_ylim(bottom=0)
     plt.savefig(os.path.join(figdir,f"{lineage}_count_per_country.svg"), format='svg', bbox_inches='tight')
 
 
@@ -493,8 +493,8 @@ def plot_figures(world_map_file, figdir, metadata, lineages_of_interest,flight_d
     for lineage in lineages_of_interest:
         with_info, locations_to_dates, country_new_seqs, loc_to_earliest_date, country_dates = make_dataframe(metadata, conversion_dict2, omitted, lineage, countries, world_map)
 
-        if lineage == "B.1.1.7":
-           flight_data_plot(figdir, flight_data,locations_to_dates)
+        # if lineage == "B.1.1.7":
+        #    flight_data_plot(figdir, flight_data,locations_to_dates)
 
         plot_date_map(figdir, with_info, lineage)
         plot_count_map(figdir, with_info, lineage)
@@ -504,7 +504,7 @@ def plot_figures(world_map_file, figdir, metadata, lineages_of_interest,flight_d
         plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earliest_date, country_dates, lineage)
 
 
-# plot_figures(args.map, args.figdir, args.metadata, lineages_of_interest, False)
+plot_figures(args.map, args.figdir, args.metadata, lineages_of_interest, False)
 
 
 
