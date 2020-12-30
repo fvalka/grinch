@@ -362,12 +362,14 @@ def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earlies
         date_range = (max(date_dict.keys())-day_one).days
         for day in (day_one + dt.timedelta(n) for n in range(1,date_range)):
             if day not in date_dict.keys():
-                date_dict[day] = date_dict[day-dt.timedelta(1)]
+                #date_dict[day] = date_dict[day-dt.timedelta(1)]
+                date_dict[day] = 0
 
         count_date_range = (max(count_date_dict.keys())-day_one).days
         for day in (day_one + dt.timedelta(n) for n in range(1,count_date_range)):
             if day not in count_date_dict.keys():
-                count_date_dict[day] = count_date_dict[day-dt.timedelta(1)]
+                # count_date_dict[day] = count_date_dict[day-dt.timedelta(1)]
+                count_date_dict[day] = 0
                     
         frequency_over_time[country.replace("_"," ").title()] = OrderedDict(sorted(date_dict.items())) 
         counts_over_time[country.replace("_"," ").title()] = OrderedDict(sorted(count_date_dict.items()))
@@ -406,7 +408,7 @@ def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earlies
         for k2, v2 in v.items():
             count_df_dict['country'].append(k)
             count_df_dict["date"].append(k2)
-            count_df_dict["count"].append(np.log10(v2))
+            count_df_dict["count"].append(np.log10(v2+1))
             
 
     count_df = pd.DataFrame(count_df_dict)
@@ -485,8 +487,8 @@ def plot_figures(world_map_file, figdir, metadata, lineages_of_interest,flight_d
     for lineage in lineages_of_interest:
         with_info, locations_to_dates, country_new_seqs, loc_to_earliest_date, country_dates = make_dataframe(metadata, conversion_dict2, omitted, lineage, countries, world_map)
 
-        if lineage == "B.1.1.7":
-            flight_data_plot(figdir, flight_data,locations_to_dates)
+       if lineage == "B.1.1.7":
+           flight_data_plot(figdir, flight_data,locations_to_dates)
 
         plot_date_map(figdir, with_info, lineage)
         plot_count_map(figdir, with_info, lineage)
@@ -496,7 +498,7 @@ def plot_figures(world_map_file, figdir, metadata, lineages_of_interest,flight_d
         plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earliest_date, country_dates, lineage)
 
 
-# plot_figures(args.map, args.figdir, args.metadata, lineages_of_interest)
+# plot_figures(args.map, args.figdir, args.metadata, lineages_of_interest, False)
 
 
 
