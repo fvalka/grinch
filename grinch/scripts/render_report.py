@@ -57,7 +57,7 @@ def get_svg_as_string(fig_dir,fig_name):
             if i.startswith("width="):
                 new_i = "width=80%"
                 if fig_name.startswith("Sequence") or fig_name.startswith("Cumulative") or fig_name.startswith("Frequency"):
-                    new_i = "width=40%"
+                    new_i = "width=60%"
                 replace_dict[i] = new_i
     
     for i in replace_dict:
