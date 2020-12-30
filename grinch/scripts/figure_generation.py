@@ -341,8 +341,8 @@ def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earlies
     frequency_over_time = defaultdict(dict)
     counts_over_time = defaultdict(dict)
 
-    muted_pal = sns.cubehelix_palette(n_colors=10)
-    muted_pal = sns.color_palette("muted")
+    
+    # muted_pal = sns.color_palette("muted")
     for country, all_dates in locations_to_dates.items():#a dictionary with locations:[dates of variant sequences]
 
         day_one = loc_to_earliest_date[country]
@@ -375,13 +375,19 @@ def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earlies
         counts_over_time[country.replace("_"," ").title()] = OrderedDict(sorted(count_date_dict.items()))
 
     frequency_df_dict = defaultdict(list)
+    
     for k,v in frequency_over_time.items(): #key=country, value=dict of dates to frequencies
         for k2, v2 in v.items():
             frequency_df_dict['country'].append(k)
             frequency_df_dict["date"].append(k2)
             frequency_df_dict["frequency"].append(v2)
-            
+        
+    num_colours = 1
+    for i,v in frequency_over_time.items():
+        if len(v) > 10:
+            num_colours+=1
 
+    muted_pal = sns.cubehelix_palette(n_colors=num_colours)
     frequency_df = pd.DataFrame(frequency_df_dict)
 
     fig, ax = plt.subplots(figsize=(7,4))
@@ -393,11 +399,12 @@ def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earlies
             y = relevant['frequency'].rolling(7).mean()    
             x = list(frequency_df.loc[frequency_df["country"] == i]["date"])
 
-            plt.plot(x,y, label = i, color=muted_pal[c],linewidth=3)
+            plt.plot(x,y, label = i, color=muted_pal[c],linewidth=2)
             [ax.spines[loc].set_visible(False) for loc in ['top','right']]
             plt.xticks(rotation=90)
 
-    plt.legend(frameon=False)
+    plt.ylim(bottom=0)
+    plt.legend(frameon=False,fontsize=8)
     plt.ylabel("Frequency (7 day rolling average)")
     plt.xlabel("Date")
 
@@ -421,16 +428,17 @@ def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earlies
             y = relevant['count'].rolling(7).mean()    
             x = list(count_df.loc[count_df["country"] == i]["date"])
 
-            plt.plot(x,y, label = i, color=muted_pal[c],linewidth=3)
+            plt.plot(x,y, label = i, color=muted_pal[c],linewidth=2)
             [ax.spines[loc].set_visible(False) for loc in ['top','right']]
             plt.xticks(rotation=90)
-
-    plt.legend(frameon=False)
+    
+    
+    plt.legend(frameon=False,fontsize=8)
     plt.ylabel("Count (7 day rolling average)")
     plt.xlabel("Date")
     yticks = ax.get_yticks()
     ax.set_yticklabels([(int(10**ytick)) for ytick in yticks])
-
+    ax.set_ylim(bottom=0)
     plt.savefig(os.path.join(figdir,f"{lineage}_count_per_country.svg"), format='svg', bbox_inches='tight')
 
 
