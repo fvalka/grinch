@@ -342,7 +342,7 @@ def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earlies
     counts_over_time = defaultdict(dict)
 
     muted_pal = sns.cubehelix_palette(n_colors=10)
-    muted_pal = sns.color_palette("muted")
+    # muted_pal = sns.color_palette("muted")
     for country, all_dates in locations_to_dates.items():#a dictionary with locations:[dates of variant sequences]
 
         day_one = loc_to_earliest_date[country]
@@ -362,13 +362,11 @@ def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earlies
         date_range = (max(date_dict.keys())-day_one).days
         for day in (day_one + dt.timedelta(n) for n in range(1,date_range)):
             if day not in date_dict.keys():
-                #date_dict[day] = date_dict[day-dt.timedelta(1)]
                 date_dict[day] = 0
 
         count_date_range = (max(count_date_dict.keys())-day_one).days
         for day in (day_one + dt.timedelta(n) for n in range(1,count_date_range)):
             if day not in count_date_dict.keys():
-                # count_date_dict[day] = count_date_dict[day-dt.timedelta(1)]
                 count_date_dict[day] = 0
                     
         frequency_over_time[country.replace("_"," ").title()] = OrderedDict(sorted(date_dict.items())) 
