@@ -77,6 +77,7 @@ def make_summary_data(metadata,fig_dir,snp_dict):
 
     for lineage in ["B.1.351","B.1.1.7"]:
         summary_dict[lineage] = {"Lineage":lineage,
+                                "Country count":0,
                                 "Countries":collections.Counter(),
                                 "Earliest date": "",
                                 "Count":0,
@@ -103,7 +104,7 @@ def make_summary_data(metadata,fig_dir,snp_dict):
                 if lineage != "" and lineage in ["B.1.1.7","B.1.351"]:
                     
                     summary_dict[lineage]["Countries"][country]+=1
-
+                    
                     if summary_dict[lineage]["Earliest date"]:
                     
                         if d < summary_dict[lineage]["Earliest date"]:
@@ -130,6 +131,7 @@ def make_summary_data(metadata,fig_dir,snp_dict):
         summary_dict[lineage]["Travel history"] = travel_info
 
         countries = summary_dict[lineage]["Countries"]
+        summary_dict[lineage]["Country count"] = len(countries)
         country_info = ""
         total = sum(countries.values())
         for k in countries.most_common(50):
@@ -138,7 +140,7 @@ def make_summary_data(metadata,fig_dir,snp_dict):
             country_info += f"{k[0]} {k[1]}, "
         country_info = country_info.rstrip(", ")
         summary_dict[lineage]["Countries"] = country_info
-
+        
         summary_dict[lineage]["Earliest date"] = str(summary_dict[lineage]["Earliest date"])
 
         date_objects = []

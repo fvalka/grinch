@@ -237,7 +237,10 @@ def flight_data_plot(figdir, flight_data,locations_to_dates):
     gisaid_counts = {}
     for i in locations_to_dates:
         if len(locations_to_dates[i]) != 0:
+            
             loc = i.replace("_", " ").title()
+            if loc == "United States Of America":
+                loc = "United States of America"
             if loc != "United Kingdom":
                 gisaid_counts[loc] = len(locations_to_dates[i])
     
