@@ -416,8 +416,8 @@ def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earlies
         for k2, v2 in v.items():
             count_df_dict['country'].append(k)
             count_df_dict["date"].append(k2)
-            count_df_dict["count"].append(np.log10(v2+1)) #pseudocounting to deal with zeroes
-            
+            #count_df_dict["count"].append(np.log10(v2+1)) #pseudocounting to deal with zeroes
+            count_df_dict["count"].append(v2)
 
     count_df = pd.DataFrame(count_df_dict)
     fig, ax = plt.subplots(figsize=(6,3))
@@ -426,7 +426,10 @@ def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earlies
         if len(v) > 10:
             c+=1
             relevant = count_df.loc[count_df["country"] == i]
-            y = relevant['count'].rolling(7).mean()    
+            y = []
+            for value in relevant['count'].rolling(7).mean():
+                y.append(np.log10(value+1))
+            # y = relevant['count'].rolling(7).mean()    
             x = list(count_df.loc[count_df["country"] == i]["date"])
 
             plt.plot(x,y, label = i, color=muted_pal[c],linewidth=2)
@@ -467,9 +470,6 @@ def cumulative_seqs_over_time(figdir, locations_to_dates,lineage):
 
     fig, ax1 = plt.subplots(1,1,figsize=(6,3))
 
-    
-
-    
     ax1.bar(list(sorted_epiweeks.keys()), list(sorted_epiweeks.values()), color="#86b0a6", width=5)
     ax2 = ax1.twinx()
     ax2.plot(list(cum_counts.keys()), list(cum_counts.values()),linewidth=3,color="dimgrey")
