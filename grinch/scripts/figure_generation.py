@@ -198,7 +198,7 @@ def plot_bars(figdir, locations_to_dates, lineage):
         y.append(np.log10(count))
         x.append(location.replace("_", " ").title())
 
-    fig, ax = plt.subplots(1,1, figsize=(5,3), frameon=False)
+    fig, ax = plt.subplots(1,1, figsize=(6,3), frameon=False)
 
     plt.bar(x,y,color="#86b0a6")
 
@@ -307,7 +307,7 @@ def plot_frequency_new_sequences(figdir, locations_to_dates, country_new_seqs, l
         text_label_dict[country.replace("_"," ").title()] = f"{len(all_dates)}/{total}"
 
 
-    fig, ax = plt.subplots(figsize=(8,5))
+    fig, ax = plt.subplots(figsize=(6,3))
 
     sort = {k: v for k, v in sorted(voc_frequency.items(), key=lambda item: item[1], reverse=True)}
 
@@ -388,7 +388,7 @@ def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earlies
     muted_pal = sns.cubehelix_palette(n_colors=num_colours)
     frequency_df = pd.DataFrame(frequency_df_dict)
 
-    fig, ax = plt.subplots(figsize=(7,4))
+    fig, ax = plt.subplots(figsize=(6,3))
     c = 0
     for i,v in frequency_over_time.items():
         if len(v) > 10:#so we do this for countries with more than ten days between the first variant sequence and last variant sequence
@@ -417,7 +417,7 @@ def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earlies
             count_df_dict["count"].append(v2)
 
     count_df = pd.DataFrame(count_df_dict)
-    fig, ax = plt.subplots(figsize=(7,4))
+    fig, ax = plt.subplots(figsize=(6,3))
     c = 0
     for i,v in counts_over_time.items():
         if len(v) > 10:
@@ -465,7 +465,7 @@ def cumulative_seqs_over_time(figdir, locations_to_dates,lineage):
     epiweek_counts = Counter(epiweek_lst)
     sorted_epiweeks = OrderedDict(sorted(epiweek_counts.items()))
 
-    fig, ax1 = plt.subplots(1,1,figsize=(6,4))
+    fig, ax1 = plt.subplots(1,1,figsize=(6,3))
 
     ax1.bar(list(sorted_epiweeks.keys()), list(sorted_epiweeks.values()), color="#86b0a6", width=5)
     ax2 = ax1.twinx()

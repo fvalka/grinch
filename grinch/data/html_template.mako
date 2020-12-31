@@ -216,6 +216,7 @@
       .figure-container{
       max-height: 700px;
       background-size: contain;
+      margin: 0 auto;
     }
 
     @media print {
