@@ -98,11 +98,13 @@ def main(sysargs = sys.argv[1:]):
     
     gfunk.get_snps_of_interest(config)
 
-    template = pkg_resources.resource_filename('grinch', 'data/html_template.mako')
+    template_b117 = pkg_resources.resource_filename('grinch', 'data/html_template_b117.mako')
+    template_b1351 = pkg_resources.resource_filename('grinch', 'data/html_template_b1351.mako')
     command = " ".join(sys.argv[1:])
     config["command"] = f"grinch {command}"
 
-    config["template"] = template
+    config["template_b117"] = template_b117
+    config["template_b1351"] = template_b1351
     
     omitted = pkg_resources.resource_filename('grinch', 'data/omitted.csv')
     config["omitted"] = omitted

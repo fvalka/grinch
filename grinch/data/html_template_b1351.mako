@@ -476,7 +476,7 @@
             <small class="text-muted">global report investigating novel coronavirus haplotypes </small>
             <hr>
         </header>
-        <h1>New variant report
+        <h1>B.1.351 report
             <small class="text-muted">${date}</small>
         </h1>
         <br>
@@ -487,10 +487,8 @@
     <br>
     <h3><strong>Data source and processing</strong></h3>
     <p> This report is recent as of ${timestamp}. All SARS-CoV-2 sequences were downloaded from GISAID and genomes were de-duplicated based on GISAID sequence name – note that the publically available metadata may not fully allow us to de-duplicate by patient. Full data processing pipeline found <a href="https://github.com/cov-lineages/grinch" style="color:#86b0a6">here</a>.</p> 
-    <p>The sequences were then assigned lineages with pangolin v2.1.5, pangoLEARN version 2020-12-17-2.</p>
-    <p> Pangolin assigns B.1.1.7 to sequences with more than 4 of the 17 defining B.1.1.7 SNPs – defined  <a href="https://virological.org/t/preliminary-genomic-characterisation-of-an-emergent-sars-cov-2-lineage-in-the-uk-defined-by-a-novel-set-of-spike-mutations/563" style="color:#86b0a6">here</a> 
-      – and B.1.351 to any sequences with more than 5 of the 14 defining B.1.351 SNPs, defined <a href="https://www.medrxiv.org/content/10.1101/2020.12.21.20248640v1" style="color:#86b0a6">here</a>.</p>
-
+    <p>The sequences were then assigned lineages with pangolin v2.1.6, pangoLEARN version 2020-12-17-2.</p>
+    <p> Pangolin assigns B.1.351 to any sequences with more than 5 of the 9 defining B.1.351 SNPs, defined in the preprint <a href="https://www.medrxiv.org/content/10.1101/2020.12.21.20248640v1" style="color:#86b0a6">here</a>.</p>
     <h3><strong>Table 1</strong> | Summary of data   <input class="searchbar" type="text" id="myInput" onkeyup="myFunction('myInput','myTable')" placeholder="Search for lineage..." title="searchbar"></h3>
     <table class="table table-striped" id="myTable">
         <tr class="header">
@@ -549,16 +547,6 @@
         % endfor
         
         <div></div>
-        <h3><strong>Figure 11</strong> | Air traffic from UK by destination</h3>              
-        <p>The number of ticketed origin-to-destination journeys from London airports to countries outside the United Kingdom during October 2020.</p> 
-        <p>Colours indicate numbers of published genomes of B.1.1.7 deposited on GISAID. Grey bars indicate countries that have reported the presence of the variant but have not yet published B.1.1.7 sequences on GISAID. White bars indicate countries with no reports of B.1.1.7.</p> 
-        <p>Flight data come from the International Air Transportation Association that capture anonymized, passenger-level flight itinerary data, comprising both commercial flights and scheduled charter flights. These data account for ~90% of global air travel volumes, with the remaining volumes modelled using market intelligence. We report data from destinations including >5,000 passengers.</p>
-        <p>Data from Kamran Khan, Isaac Bogoch, Alexander Watts, Oliver Pybus, Moritz Kraemer</p>
-               <div class=figure-container>
-                  ${flight_figure}
-              </div>
-              <br>
-        </div>
         <div></div>
         <script>
           function myFunction(myInput, myTable) {

@@ -257,7 +257,6 @@ def flight_data_plot(figdir, flight_data,locations_to_dates):
 
     legend_patches.append(mpatches.Patch(color="lightgrey", label='Reported'))
 
-    print("muted dict",muted_dict)
     x,y,z=[],[],[]
     no_seq_dict = {}
     for i in sorted_data:
@@ -285,9 +284,7 @@ def flight_data_plot(figdir, flight_data,locations_to_dates):
     fig,ax = plt.subplots(figsize=(9,8))
     
     colours = [muted_mapping[i] for i in x ]
-    print("mapping",muted_mapping)
-    print(x)
-    print("Colours",colours)
+
     customPalette = sns.set_palette(sns.color_palette(colours))
     # colours = [[0.9157923182358403, 0.7887382324108813, 0.762379547318096], [0.35236581054056426, 0.19374450047758163, 0.36385783424464163], 'white', 'white', 'lightgrey', [0.22670646986529738, 0.13274650666137483, 0.2712570360553994], 'white', 'white', 'white', [0.6000254545207635, 0.34357712853426287, 0.49642279322522603], 'white', [0.9157923182358403, 0.7887382324108813, 0.762379547318096], [0.9157923182358403, 0.7887382324108813, 0.762379547318096], 'white', 'white', 'white', 'white', [0.7912783609518846, 0.5423668589478735, 0.6004332530547714], 'white', [0.47646765006069514, 0.2608912893189593, 0.4358483640521266], 'white', 'lightgrey', 'white', 'white', 'white', 'white', 'white', 'white', 'white', 'white', 'white', 'white', [0.7045593173634487, 0.43636067561566483, 0.5471495749492405], 'white', 'white', 'white', 'white', 'white', [0.8624113337043101, 0.664860941446331, 0.6706114180923453], 'white']
     sns.barplot(x="flights", y="country", palette=customPalette, edgecolor=".8", dodge=False,data=df)
@@ -345,14 +342,14 @@ def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earlies
     frequency_over_time = defaultdict(dict)
     counts_over_time = defaultdict(dict)
 
-    
+    country_threshold = []
     # muted_pal = sns.color_palette("muted")
     for country, all_dates in locations_to_dates.items():#a dictionary with locations:[dates of variant sequences]
-
+        
         day_one = loc_to_earliest_date[country]
         date_dict = {}
         count_date_dict = {}
-
+        
         overall_counts = Counter(country_dates[country]) #counter of all sequences since the variant was first sampled in country
         voc_counts = Counter(all_dates) #so get a counter of variant sequences
 
@@ -372,10 +369,11 @@ def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earlies
         for day in (day_one + dt.timedelta(n) for n in range(1,count_date_range)):
             if day not in count_date_dict.keys():
                 count_date_dict[day] = 0
-                    
+        if len(all_dates) > 10:
+            country_threshold.append(country.replace("_"," ").title())
         frequency_over_time[country.replace("_"," ").title()] = OrderedDict(sorted(date_dict.items())) 
         counts_over_time[country.replace("_"," ").title()] = OrderedDict(sorted(count_date_dict.items()))
-
+    print("Country threshold",country_threshold)
     frequency_df_dict = defaultdict(list)
     
     for k,v in frequency_over_time.items(): #key=country, value=dict of dates to frequencies
@@ -386,7 +384,7 @@ def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earlies
         
     num_colours = 1
     for i,v in frequency_over_time.items():
-        if len(v) > 10:
+        if len(v) > 10 and i in country_threshold:
             num_colours+=1
 
     muted_pal = sns.cubehelix_palette(n_colors=num_colours)
@@ -395,7 +393,7 @@ def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earlies
     fig, ax = plt.subplots(figsize=(6,3))
     c = 0
     for i,v in frequency_over_time.items():
-        if len(v) > 10:#so we do this for countries with more than ten days between the first variant sequence and last variant sequence
+        if len(v) > 10 and i in country_threshold:#so we do this for countries with more than ten days between the first variant sequence and last variant sequence
             c +=1
             relevant = frequency_df.loc[frequency_df["country"] == i]
             y = relevant['frequency'].rolling(7).mean()    
@@ -424,7 +422,7 @@ def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earlies
     fig, ax = plt.subplots(figsize=(6,3))
     c = 0
     for i,v in counts_over_time.items():
-        if len(v) > 10:
+        if len(v) > 10 and i in country_threshold:
             c+=1
             relevant = count_df.loc[count_df["country"] == i]
             y = []
