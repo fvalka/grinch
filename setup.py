@@ -33,8 +33,8 @@ setup(name='grinch',
             "epiweeks>=2.1.2"
         ],
 
-      description='B.1.1.7 reporting tool',
-      url='https://github.com/aineniamh/civet',
+      description='new variant reporting tool',
+      url='https://github.com/aineniamh/grinch',
       author='Aine OToole, Verity Hill, Ben Jackson',
       author_email='aine.otoole@ed.ac.uk',
       entry_points="""

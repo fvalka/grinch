@@ -20,7 +20,8 @@ def parse_args():
     parser.add_argument("--snps",help="snps")
     parser.add_argument("--figdir",help="figure directory")
     parser.add_argument("--command",help="command string", dest="command")
-    parser.add_argument("--template",help="template mako html",dest="template")
+    parser.add_argument("--template-b117",help="template mako html",dest="template_b117")
+    parser.add_argument("--template-b1351",help="template mako html",dest="template_b1351")
     parser.add_argument("--report", help="output report file", dest="report")
     parser.add_argument("--time", help="timestamp", dest="time")
 
@@ -177,6 +178,25 @@ def make_summary_data(metadata,fig_dir,snp_dict):
         print(row["Lineage"]) 
     return rows, flight_figure
 
+def lineage_report(template, command, time, today, data, report_stem, lineage, flight_figure):
+    mytemplate = Template(filename=template)
+    buf = StringIO()
+
+    ctx = Context(buf, command = command, timestamp = time, date = today, version = __version__, summary_data = data, lineage_data = [lineage],flight_figure=flight_figure)
+
+    try:
+        mytemplate.render_context(ctx)
+    except:
+        traceback = RichTraceback()
+        for (filename, lineno, function, line) in traceback.traceback:
+            print("File %s, line %s, in %s" % (filename, lineno, function))
+            print(line, "\n")
+        print("%s: %s" % (str(traceback.error.__class__.__name__), traceback.error))
+
+    with open(f"{report_stem}_{lineage}.html","w") as fw:
+        fw.write(buf.getvalue())
+
+
 def make_report():
 
     args = parse_args()
@@ -190,24 +210,9 @@ def make_report():
     summary_data, flight_figure = make_summary_data(args.metadata,args.figdir,snp_dict)
 
     today = date.today()
-    
-    mytemplate = Template(filename=args.template)
-    buf = StringIO()
 
-    ctx = Context(buf, command = args.command, timestamp = args.time, date = today, version = __version__, summary_data = summary_data, lineage_data = ['B.1.1.7','B.1.351'],flight_figure=flight_figure)
-
-
-    try:
-        mytemplate.render_context(ctx)
-    except:
-        traceback = RichTraceback()
-        for (filename, lineno, function, line) in traceback.traceback:
-            print("File %s, line %s, in %s" % (filename, lineno, function))
-            print(line, "\n")
-        print("%s: %s" % (str(traceback.error.__class__.__name__), traceback.error))
-
-    with open(args.report,"w") as fw:
-        fw.write(buf.getvalue())
+    lineage_report(args.template_b1351, args.command, args.time, today, [summary_data[0]], args.report, 'B.1.351', None)
+    lineage_report(args.template_b117, args.command, args.time, today, [summary_data[1]], args.report, 'B.1.1.7', flight_figure)
 
 if __name__ == "__main__":
     make_report()
