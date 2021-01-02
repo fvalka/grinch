@@ -487,8 +487,9 @@
     <br>
     <h3><strong>Data source and processing</strong></h3>
     <p> This report is recent as of ${timestamp}. All SARS-CoV-2 sequences were downloaded from GISAID and genomes were de-duplicated based on GISAID sequence name – note that the publically available metadata may not fully allow us to de-duplicate by patient. Full data processing pipeline found <a href="https://github.com/cov-lineages/grinch" style="color:#86b0a6">here</a>.</p> 
-    <p>The sequences were then assigned lineages with pangolin v2.1.4, pangoLEARN version 2020-12-17-2.</p>
-    <p> Pangolin assigns B.1.1.7 to sequences with more than 4 of the 17 defining B.1.1.7 SNPs – defined  <a href="https://virological.org/t/preliminary-genomic-characterisation-of-an-emergent-sars-cov-2-lineage-in-the-uk-defined-by-a-novel-set-of-spike-mutations/563" style="color:#86b0a6">here</a> – and B.1.351 to any sequences with more than 3 of the 5 defining B.1.351 SNPs.</p>
+    <p>The sequences were then assigned lineages with pangolin v2.1.5, pangoLEARN version 2020-12-17-2.</p>
+    <p> Pangolin assigns B.1.1.7 to sequences with more than 4 of the 17 defining B.1.1.7 SNPs – defined  <a href="https://virological.org/t/preliminary-genomic-characterisation-of-an-emergent-sars-cov-2-lineage-in-the-uk-defined-by-a-novel-set-of-spike-mutations/563" style="color:#86b0a6">here</a> 
+      – and B.1.351 to any sequences with more than 5 of the 14 defining B.1.351 SNPs, defined <a href="https://www.medrxiv.org/content/10.1101/2020.12.21.20248640v1" style="color:#86b0a6">here</a>.</p>
 
     <h3><strong>Table 1</strong> | Summary of data   <input class="searchbar" type="text" id="myInput" onkeyup="myFunction('myInput','myTable')" placeholder="Search for lineage..." title="searchbar"></h3>
     <table class="table table-striped" id="myTable">

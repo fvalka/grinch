@@ -57,6 +57,7 @@ def prep_inputs():
     conversion_dict["Serbia"] = "Republic_of_Serbia"
     conversion_dict["Côte_d’Ivoire"] = "Ivory_Coast"
     conversion_dict["Cote_dIvoire"] = "Ivory_Coast"
+    conversion_dict["CÔTE_D'IVOIRE"] = "Ivory_Coast"
     conversion_dict["Czech_Repubic"] = "Czech_Republic"
     conversion_dict["UK"] = "United_Kingdom"
     conversion_dict["Timor-Leste"] = "East_Timor"
