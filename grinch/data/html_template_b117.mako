@@ -547,7 +547,7 @@
         % endfor
         
         <div></div>
-        <h3><strong>Figure 11</strong> | Air traffic from UK by destination</h3>              
+        <h3><strong>Figure 6</strong> | Air traffic from UK by destination</h3>              
         <p>The number of ticketed origin-to-destination journeys from London airports to countries outside the United Kingdom during October 2020.</p> 
         <p>Colours indicate numbers of published genomes of B.1.1.7 deposited on GISAID. Grey bars indicate countries that have reported the presence of the variant but have not yet published B.1.1.7 sequences on GISAID. White bars indicate countries with no reports of B.1.1.7.</p> 
         <p>Flight data come from the International Air Transportation Association that capture anonymized, passenger-level flight itinerary data, comprising both commercial flights and scheduled charter flights. These data account for ~90% of global air travel volumes, with the remaining volumes modelled using market intelligence. We report data from destinations including >5,000 passengers.</p>
@@ -556,6 +556,29 @@
                   ${flight_figure}
               </div>
               <br>
+        </div>
+        <div>
+          <h3><strong>Table ${row['Lineage']}</strong> | Lineage ${row['Lineage']}</h3>
+          <table class="table table-striped">
+              <tr class="header">
+              <th style="width:10%;">Country</th>
+              <th style="width:10%;">Earliest report</th>
+              <th style="width:20%;">Date local transmission</th>
+              <th style="width:20%;">Local transmission (0 or 1)</th>
+              <th style="width:30%;">Source</th>
+              </tr>
+              % for row in import_reports:
+              <tr>
+                  <td>${row["Country"]}</td>
+                  <td>${row["Earliest report"]}</td>
+                  <td>${row["Date local transmission"]}</td>
+                  <td>${row["Local transmission"]}</td>
+                  <td>${row["Source"]}</td>
+              </tr>
+            </table>
+          <p>
+
+          </p>
         </div>
         <div></div>
         <script>

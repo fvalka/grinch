@@ -24,6 +24,7 @@ def parse_args():
     parser.add_argument("--template-b1351",help="template mako html",dest="template_b1351")
     parser.add_argument("--report", help="output report file", dest="report")
     parser.add_argument("--time", help="timestamp", dest="time")
+    parser.add_argument("--import-report", help="import report", dest="import_report")
 
     return parser.parse_args()
 
@@ -196,6 +197,20 @@ def lineage_report(template, command, time, today, data, report_stem, lineage, f
     with open(f"{report_stem}_{lineage}.html","w") as fw:
         fw.write(buf.getvalue())
 
+def parse_import_data(import_report):
+    import_data = []
+    with open(import_report, "r") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            row_data = {"Country": row["Country"],
+                        "Earliest report": row["earliest_report"],
+                        "Date local transmission": row["date_local"],
+                        "Local transmission": row["imported_local"],
+                        "Source": row["Source"]
+                        }
+            import_data.append(row_data)
+    return import_data
+
 
 def make_report():
 
@@ -212,7 +227,9 @@ def make_report():
     today = date.today()
 
     lineage_report(args.template_b1351, args.command, args.time, today, [summary_data[0]], args.report, 'B.1.351', None)
-    lineage_report(args.template_b117, args.command, args.time, today, [summary_data[1]], args.report, 'B.1.1.7', flight_figure)
+
+    import_data = parse_import_data(args.import_report)
+    lineage_report(args.template_b117, args.command, args.time, today, [summary_data[1]], args.report, 'B.1.1.7', flight_figure,import_data)
 
 if __name__ == "__main__":
     make_report()
