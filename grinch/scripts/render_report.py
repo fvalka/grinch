@@ -179,11 +179,11 @@ def make_summary_data(metadata,fig_dir,snp_dict):
         print(row["Lineage"]) 
     return rows, flight_figure
 
-def lineage_report(template, command, time, today, data, report_stem, lineage, flight_figure):
+def lineage_report(template, command, time, today, data, report_stem, lineage, flight_figure,import_report):
     mytemplate = Template(filename=template)
     buf = StringIO()
 
-    ctx = Context(buf, command = command, timestamp = time, date = today, version = __version__, summary_data = data, lineage_data = [lineage],flight_figure=flight_figure)
+    ctx = Context(buf, command = command, timestamp = time, date = today, version = __version__, summary_data = data, lineage_data = [lineage],flight_figure=flight_figure,import_report=import_report)
 
     try:
         mytemplate.render_context(ctx)
@@ -226,7 +226,7 @@ def make_report():
 
     today = date.today()
 
-    lineage_report(args.template_b1351, args.command, args.time, today, [summary_data[0]], args.report, 'B.1.351', None)
+    lineage_report(args.template_b1351, args.command, args.time, today, [summary_data[0]], args.report, 'B.1.351', None,None)
 
     import_data = parse_import_data(args.import_report)
     lineage_report(args.template_b117, args.command, args.time, today, [summary_data[1]], args.report, 'B.1.1.7', flight_figure,import_data)

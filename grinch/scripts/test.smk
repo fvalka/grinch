@@ -27,7 +27,7 @@ rule render_report:
         --report {params.report_stem:q} \
         --command {config[command]:q} \
         --snps {config[snps]:q} \
-        --time {config[timestamp]:q} \ 
+        --time {config[timestamp]:q} \
         --import-report {config[import_report]:q}
         """)
         print(gfunk.green("Grinch report written to:") + f"{output.report_b117} and {output.report_b1351}")

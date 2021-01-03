@@ -522,8 +522,16 @@
               <th style="width:60%;">Information</th>
               </tr>
               <tr>
-                  <td>Count</td>
+                  <td>Sequence count</td>
                   <td>${row["Count"]}</td>
+              </tr>
+              <tr>
+                <td>Countries with sequences</td>
+                <td>${row["Country count"]}</td>
+              </tr>
+              <tr>
+                <td><a href="#table2link" style="color:#86b0a6">Countries reported</a></td>
+                <td>${len(import_report)}</td>
               </tr>
               <tr>
                 <td>Likely origin</td>
@@ -556,30 +564,27 @@
                   ${flight_figure}
               </div>
               <br>
-        </div>
-        <div>
-          <h3><strong>Table ${row['Lineage']}</strong> | Lineage ${row['Lineage']}</h3>
-          <table class="table table-striped">
-              <tr class="header">
-              <th style="width:10%;">Country</th>
-              <th style="width:10%;">Earliest report</th>
-              <th style="width:20%;">Date local transmission</th>
-              <th style="width:20%;">Local transmission (0 or 1)</th>
-              <th style="width:30%;">Source</th>
-              </tr>
-              % for row in import_reports:
-              <tr>
-                  <td>${row["Country"]}</td>
-                  <td>${row["Earliest report"]}</td>
-                  <td>${row["Date local transmission"]}</td>
-                  <td>${row["Local transmission"]}</td>
-                  <td>${row["Source"]}</td>
-              </tr>
-            </table>
-          <p>
-
-          </p>
-        </div>
+      <h3><a id = "table2link"></a><strong>Table 2</strong> | Reported B.1.1.7 imports. <input class="searchbar" type="text" id="myInput2" onkeyup="myFunction('myInput2','myTable2')" placeholder="Search for country..." title="searchbar"></h3>
+      <p><b>Country count:</b> ${len(import_report)}
+      <table class="table table-striped"  id="myTable2">
+        <tr class="header">
+          <th style="width:30%;">Country</th>
+          <th style="width:20%;text-align:center">Earliest report</th>
+          <th style="width:20%;text-align:center">Date local transmission</th>
+          <th style="width:10%;text-align:center">Local transmission</th>
+          <th style="width:20%;">Source</th>
+        </tr>
+          % for row in import_report:
+          <tr>
+              <td>${row["Country"]}</td>
+              <td style="text-align:center">${row["Earliest report"]}</td>
+              <td style="text-align:center">${row["Date local transmission"]}</td>
+              <td style="text-align:center">${row["Local transmission"]}</td>
+              <td><a href='${row["Source"]}' style="color:#86b0a6">${row["Source"]}</a></td>
+          </tr>
+          % endfor
+        </table>
+      </div>
         <div></div>
         <script>
           function myFunction(myInput, myTable) {
