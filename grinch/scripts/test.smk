@@ -15,7 +15,7 @@ rule render_report:
         report_b117 = os.path.join(config["outdir"],"report", f"{output_prefix}_B.1.1.7.html"),
         report_b1351 = os.path.join(config["outdir"],"report", f"{output_prefix}_B.1.351.html")
     run:
-        fig_gen.plot_figures(config["world_map_file"], config["figdir"], input.metadata, config["lineages_of_interest"],config["flight_data"])
+        fig_gen.plot_figures(config["world_map_file"], config["figdir"], input.metadata, config["lineages_of_interest"],config["flight_data_b117"],config["flight_data_b1351"])
         print(f"Generated the figure files  in {config['figdir']}")
         shell(
         """
@@ -28,7 +28,8 @@ rule render_report:
         --command {config[command]:q} \
         --snps {config[snps]:q} \
         --time {config[timestamp]:q} \
-        --import-report {config[import_report]:q}
+        --import-report-b117 {config[import_report_b117]:q} \
+        --import-report-b1351 {config[import_report_b1351]:q}
         """)
         print(gfunk.green("Grinch report written to:") + f"{output.report_b117} and {output.report_b1351}")
         

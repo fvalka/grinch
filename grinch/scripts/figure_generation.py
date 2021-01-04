@@ -152,6 +152,30 @@ def plot_date_map(figdir, with_info, lineage):
     plt.savefig(os.path.join(figdir,f"Date_of_earliest_{lineage}_detected.svg"), format='svg', bbox_inches='tight')
 
 
+def plot_report_map(figdir, with_info, lineage):
+
+    muted_pal = sns.cubehelix_palette(as_cmap=True)
+    dark = mpatches.Patch(color=muted_pal.colors[-1], label='Local transmission')
+    light = mpatches.Patch(color=muted_pal.colors[0], label='Imports reported')
+    none = mpatches.Patch(color="lightgrey", label='No variant reported')
+    fig, ax = plt.subplots(figsize=(10,10))
+
+    with_info = with_info.to_crs("EPSG:4326")
+    with_info.plot(ax=ax, cmap=muted_pal, legend=False, column="number_of_sequences", 
+                    # legend_kwds={'bbox_to_anchor':(-.03, 1.05),'fontsize':7,'frameon':False},
+                    missing_kwds={"color": "lightgrey","label": "No variant reported"})
+
+    
+
+    ax.legend(handles=[dark,light,none],bbox_to_anchor=(-.03, 1.05),fontsize=8,frameon=False)
+    ax.axis("off")
+
+    # colourbar = ax.get_figure().get_axes()[1]
+    # yticks = colourbar.get_yticks()
+    # colourbar.set_yticklabels([round(math.exp(ytick)) for ytick in yticks])
+
+    plt.savefig(os.path.join(figdir,f"Map_of_{lineage}_sequence_counts.svg"), format='svg', bbox_inches='tight')
+
 
 
 def plot_count_map(figdir, with_info, lineage):
@@ -220,13 +244,16 @@ def plot_bars(figdir, locations_to_dates, lineage):
 
     plt.savefig(os.path.join(figdir,f"Sequence_count_per_country_{lineage}.svg"), format='svg', bbox_inches='tight')
 
-def flight_data_plot(figdir, flight_data,locations_to_dates):
-
+def flight_data_plot(figdir, flight_data,locations_to_dates,lineage):
+    if lineage == "B.1.351":
+        threshold = 300
+    elif lineage == "B.1.1.7":
+        threshold = 5000
     data = []
     with open(flight_data,"r") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            if int(row["flights"]) > 5000:
+            if int(row["flights"]) > threshold:
                 if row["gisaidNumber"] =="":
                     data.append((row["country"], int(row["flights"]), 0))
                 else:
@@ -242,14 +269,20 @@ def flight_data_plot(figdir, flight_data,locations_to_dates):
             loc = i.replace("_", " ").title()
             if loc == "United States Of America":
                 loc = "United States of America"
-            if loc != "United Kingdom":
-                gisaid_counts[loc] = len(locations_to_dates[i])
+            if lineage == "B.1.1.7":
+                if loc != "United Kingdom":
+                    gisaid_counts[loc] = len(locations_to_dates[i])
+            elif lineage == "B.1.351":
+                if loc != "South Africa":
+                    gisaid_counts[loc] = len(locations_to_dates[i])
+
     
     counts = sorted(list(set(gisaid_counts.values())))
+    print(counts)
     muted_pal = sns.cubehelix_palette(gamma=1.2,n_colors=len(counts)+2)
     muted_dict = {0: "white",9999:"lightgrey"}
     legend_patches = [mpatches.Patch(color="white", label='0')]
-
+    print(muted_pal)
     for i in range(0,len(counts)):
 
         legend_patches.append(mpatches.Patch(color=muted_pal[i], label=counts[i]))
@@ -280,20 +313,20 @@ def flight_data_plot(figdir, flight_data,locations_to_dates):
             if i in no_seq_dict:
                 muted_mapping[i] = no_seq_dict[i]
 
-    
+    print(muted_mapping)
     fig,ax = plt.subplots(figsize=(9,8))
     
     colours = [muted_mapping[i] for i in x ]
-
+    print(colours)
     customPalette = sns.set_palette(sns.color_palette(colours))
     # colours = [[0.9157923182358403, 0.7887382324108813, 0.762379547318096], [0.35236581054056426, 0.19374450047758163, 0.36385783424464163], 'white', 'white', 'lightgrey', [0.22670646986529738, 0.13274650666137483, 0.2712570360553994], 'white', 'white', 'white', [0.6000254545207635, 0.34357712853426287, 0.49642279322522603], 'white', [0.9157923182358403, 0.7887382324108813, 0.762379547318096], [0.9157923182358403, 0.7887382324108813, 0.762379547318096], 'white', 'white', 'white', 'white', [0.7912783609518846, 0.5423668589478735, 0.6004332530547714], 'white', [0.47646765006069514, 0.2608912893189593, 0.4358483640521266], 'white', 'lightgrey', 'white', 'white', 'white', 'white', 'white', 'white', 'white', 'white', 'white', 'white', [0.7045593173634487, 0.43636067561566483, 0.5471495749492405], 'white', 'white', 'white', 'white', 'white', [0.8624113337043101, 0.664860941446331, 0.6706114180923453], 'white']
     sns.barplot(x="flights", y="country", palette=customPalette, edgecolor=".8", dodge=False,data=df)
-    plt.xlabel("Total Number of Passengers from London\nOctober")
+    plt.xlabel("Total Number of Passengers")
     plt.ylabel("Country")
     ax.legend(handles=legend_patches,fontsize=8,frameon=False)
     [ax.spines[loc].set_visible(False) for loc in ['top','right']]
 
-    plt.savefig(os.path.join(figdir,f"Air_traffic_from_UK_by_destination.svg"), format='svg', bbox_inches='tight')
+    plt.savefig(os.path.join(figdir,f"Air_traffic_by_destination_{lineage}.svg"), format='svg', bbox_inches='tight')
 
 
 def plot_frequency_new_sequences(figdir, locations_to_dates, country_new_seqs, loc_to_earliest_date, lineage):
@@ -485,7 +518,7 @@ def cumulative_seqs_over_time(figdir, locations_to_dates,lineage):
     plt.savefig(os.path.join(figdir,f"Cumulative_sequence_count_over_time_{lineage}.svg"), format='svg', bbox_inches='tight')
 
 
-def plot_figures(world_map_file, figdir, metadata, lineages_of_interest,flight_data):
+def plot_figures(world_map_file, figdir, metadata, lineages_of_interest,flight_data_b117,flight_data_b1351):
 
     world_map, countries = prep_map(world_map_file)
     conversion_dict2, omitted = prep_inputs()
@@ -496,7 +529,9 @@ def plot_figures(world_map_file, figdir, metadata, lineages_of_interest,flight_d
         with_info, locations_to_dates, country_new_seqs, loc_to_earliest_date, country_dates = make_dataframe(metadata, conversion_dict2, omitted, lineage, countries, world_map)
 
         if lineage == "B.1.1.7":
-           flight_data_plot(figdir, flight_data,locations_to_dates)
+            flight_data_plot(figdir, flight_data_b117,locations_to_dates,"B.1.1.7")
+        elif lineage == "B.1.351":
+            flight_data_plot(figdir, flight_data_b1351,locations_to_dates,"B.1.351")
 
         plot_date_map(figdir, with_info, lineage)
         plot_count_map(figdir, with_info, lineage)

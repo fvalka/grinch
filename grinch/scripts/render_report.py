@@ -24,8 +24,8 @@ def parse_args():
     parser.add_argument("--template-b1351",help="template mako html",dest="template_b1351")
     parser.add_argument("--report", help="output report file", dest="report")
     parser.add_argument("--time", help="timestamp", dest="time")
-    parser.add_argument("--import-report", help="import report", dest="import_report")
-
+    parser.add_argument("--import-report-b117", help="import report", dest="import_report_b117")
+    parser.add_argument("--import-report-b1351", help="import report", dest="import_report_b1351")
     return parser.parse_args()
 
 
@@ -88,7 +88,7 @@ def make_summary_data(metadata,fig_dir,snp_dict):
                                 "SNPs":snp_dict[lineage],
                                 "Likely origin":"",
                                 "figures":[]}
-    fig_count = 0
+    
     summary_dict["B.1.1.7"]["Likely origin"] = "United Kingdom"
     summary_dict["B.1.351"]["Likely origin"] = "South Africa"
     # compile data for json
@@ -121,10 +121,11 @@ def make_summary_data(metadata,fig_dir,snp_dict):
                     if travel_history:
                         summary_dict[lineage]["Travel history"][travel_history]+=1
 
-    flight_figure = get_svg_as_string(fig_dir,"Air_traffic_from_UK_by_destination.svg")
+    flight_figure_b117 = get_svg_as_string(fig_dir,"Air_traffic_by_destination_B.1.1.7.svg")
+    flight_figure_b1351 = get_svg_as_string(fig_dir,"Air_traffic_by_destination_B.1.351.svg")
 
     for lineage in summary_dict:
-
+        fig_count = 0
         travel = summary_dict[lineage]["Travel history"]
         travel_info = ""
         for k in travel:
@@ -177,25 +178,7 @@ def make_summary_data(metadata,fig_dir,snp_dict):
         rows.append(summary_dict[lineage])
     for row in rows:
         print(row["Lineage"]) 
-    return rows, flight_figure
-
-def lineage_report(template, command, time, today, data, report_stem, lineage, flight_figure,import_report):
-    mytemplate = Template(filename=template)
-    buf = StringIO()
-
-    ctx = Context(buf, command = command, timestamp = time, date = today, version = __version__, summary_data = data, lineage_data = [lineage],flight_figure=flight_figure,import_report=import_report)
-
-    try:
-        mytemplate.render_context(ctx)
-    except:
-        traceback = RichTraceback()
-        for (filename, lineno, function, line) in traceback.traceback:
-            print("File %s, line %s, in %s" % (filename, lineno, function))
-            print(line, "\n")
-        print("%s: %s" % (str(traceback.error.__class__.__name__), traceback.error))
-
-    with open(f"{report_stem}_{lineage}.html","w") as fw:
-        fw.write(buf.getvalue())
+    return rows,flight_figure_b117,flight_figure_b1351
 
 def parse_import_data(import_report):
     import_data = []
@@ -211,6 +194,28 @@ def parse_import_data(import_report):
             import_data.append(row_data)
     return import_data
 
+def lineage_report(template, command, time, today, data, report_stem, lineage, flight_figure,import_report):
+    mytemplate = Template(filename=template)
+    buf = StringIO()
+
+    import_data = parse_import_data(import_report)
+
+    ctx = Context(buf, command = command, timestamp = time, date = today, version = __version__, summary_data = data, lineage_data = [lineage],flight_figure=flight_figure,import_report=import_data)
+
+    try:
+        mytemplate.render_context(ctx)
+    except:
+        traceback = RichTraceback()
+        for (filename, lineno, function, line) in traceback.traceback:
+            print("File %s, line %s, in %s" % (filename, lineno, function))
+            print(line, "\n")
+        print("%s: %s" % (str(traceback.error.__class__.__name__), traceback.error))
+
+    with open(f"{report_stem}_{lineage}.html","w") as fw:
+        fw.write(buf.getvalue())
+
+
+
 
 def make_report():
 
@@ -222,14 +227,13 @@ def make_report():
         lineage,snps = i.split("=")
         snp_dict[lineage]= snps.replace(";","<br> ")
 
-    summary_data, flight_figure = make_summary_data(args.metadata,args.figdir,snp_dict)
+    summary_data, flight_figure_b117,flight_figure_b1351 = make_summary_data(args.metadata,args.figdir,snp_dict)
 
     today = date.today()
 
-    lineage_report(args.template_b1351, args.command, args.time, today, [summary_data[0]], args.report, 'B.1.351', None,None)
+    lineage_report(args.template_b1351, args.command, args.time, today, [summary_data[0]], args.report, 'B.1.351', flight_figure_b1351,args.import_report_b1351)
 
-    import_data = parse_import_data(args.import_report)
-    lineage_report(args.template_b117, args.command, args.time, today, [summary_data[1]], args.report, 'B.1.1.7', flight_figure,import_data)
+    lineage_report(args.template_b117, args.command, args.time, today, [summary_data[1]], args.report, 'B.1.1.7', flight_figure_b117,args.import_report_b117)
 
 if __name__ == "__main__":
     make_report()
