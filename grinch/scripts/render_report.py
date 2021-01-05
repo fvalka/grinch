@@ -190,6 +190,7 @@ def parse_import_data(import_report):
                         "Earliest report": row["earliest_report"],
                         "Date local transmission": row["date_local"],
                         "Local transmission": row["imported_local"],
+                        "Method of surveillance": row["method_surveillance"],
                         "Source": row["Source"]
                         }
             import_data.append(row_data)

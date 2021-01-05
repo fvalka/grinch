@@ -165,7 +165,7 @@ def make_transmission_map(figdir, world_map, lineage, relevant_table):
     patches = [plt.plot([],[], marker="o", ms=10, ls="", mec=None, color=colour_dict[i], 
                 label="{:s}".format(label_dict[i]) )[0]  for i in (label_dict.keys())]
 
-    ax.legend()
+    ax.legend(bbox_to_anchor=(-.03, 1.05),fontsize=8,frameon=False)
 
     ax.axis("off")            
     plt.savefig(os.path.join(figdir,f"Map_of_{lineage}_local_transmission.svg"), format='svg', bbox_inches='tight')
