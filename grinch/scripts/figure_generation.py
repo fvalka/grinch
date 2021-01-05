@@ -134,12 +134,49 @@ def make_dataframe(metadata, conversion_dict2, omitted, lineage_of_interest, cou
 
     return with_info, locations_to_dates, country_new_seqs, loc_to_earliest_date, country_dates
 
+def make_transmission_map(figdir, world_map, lineage, relevant_table):
+
+    df_dict = defaultdict(list)
+
+    with open(relevant_table) as f:
+        data = csv.DictReader(f)
+        for line in data:
+            df_dict["admin"].append(line["Country"].upper().replace(" ","_"))            
+            if line["imported_local"] == "1":
+                df_dict["transmission_number"].append(2)
+            elif line["imported_local"] == "0":
+                df_dict["transmission_number"].append(1)
+            elif line["imported_local"] == "":
+                df_dict["transmission_number"].append(0)
+            
+    transmission_df = pd.DataFrame(df_dict)
+
+    with_trans_info = world_map.merge(transmission_df, how="outer")
+    trans_nona = with_trans_info.fillna(-1)
+    trans_nona = trans_nona.dropna()
+
+
+    colour_dict = {0.0:"#edd1cb", 1.0: '#aa688f', 2.0:'#2d1e3e', -1:"#d3d3d3"}
+    label_dict = {0.0:"status_unknown",1.0:"imported_only",2.0:"local_transmission", -1:"No variant recorded"}
+
+    fig, ax = plt.subplots(figsize=(10,10))
+    trans_nona.plot(ax=ax, color=trans_nona["transmission_number"].map(colour_dict))
+
+    patches = [plt.plot([],[], marker="o", ms=10, ls="", mec=None, color=colour_dict[i], 
+                label="{:s}".format(label_dict[i]) )[0]  for i in (label_dict.keys())]
+
+    ax.legend()
+
+    ax.axis("off")            
+    plt.savefig(os.path.join(figdir,f"Map_of_{lineage}_local_transmission.svg"), format='svg', bbox_inches='tight')
+
+
+
 def plot_date_map(figdir, with_info, lineage):
 
     muted_pal = sns.cubehelix_palette(as_cmap=True, reverse=True)
 
     fig, ax = plt.subplots(figsize=(10,10))
-
 
     with_info = with_info.to_crs("EPSG:4326")
 
@@ -518,23 +555,24 @@ def cumulative_seqs_over_time(figdir, locations_to_dates,lineage):
     plt.savefig(os.path.join(figdir,f"Cumulative_sequence_count_over_time_{lineage}.svg"), format='svg', bbox_inches='tight')
 
 
-def plot_figures(world_map_file, figdir, metadata, lineages_of_interest,flight_data_b117,flight_data_b1351):
+def plot_figures(world_map_file, figdir, metadata, lineages_of_interest,flight_data_b117,flight_data_b1351, table_b117, table_b1351):
 
     world_map, countries = prep_map(world_map_file)
     conversion_dict2, omitted = prep_inputs()
-
-    
 
     for lineage in lineages_of_interest:
         with_info, locations_to_dates, country_new_seqs, loc_to_earliest_date, country_dates = make_dataframe(metadata, conversion_dict2, omitted, lineage, countries, world_map)
 
         if lineage == "B.1.1.7":
             flight_data_plot(figdir, flight_data_b117,locations_to_dates,"B.1.1.7")
+            relevant_table = table_b117
         elif lineage == "B.1.351":
             flight_data_plot(figdir, flight_data_b1351,locations_to_dates,"B.1.351")
+            relevant_table = table_b1351
 
         plot_date_map(figdir, with_info, lineage)
         plot_count_map(figdir, with_info, lineage)
+        make_transmission_map(figdir, world_map, lineage, relevant_table)
         plot_bars(figdir, locations_to_dates, lineage)
         cumulative_seqs_over_time(figdir,locations_to_dates,lineage)
         plot_frequency_new_sequences(figdir, locations_to_dates, country_new_seqs, loc_to_earliest_date, lineage)
