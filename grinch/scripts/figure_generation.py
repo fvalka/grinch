@@ -3,6 +3,7 @@ import csv
 from collections import defaultdict
 from collections import Counter
 from collections import OrderedDict
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from epiweeks import Week
@@ -28,7 +29,10 @@ import os
 # ###
 
 plt.rcParams.update({'font.size': 10})
-
+new_rc_params = {'text.usetex': False,
+"svg.fonttype": 'none'
+}
+mpl.rcParams.update(new_rc_params)
 def prep_map(world_map_file):
 
     world_map = geopandas.read_file(world_map_file)
@@ -176,7 +180,7 @@ def make_transmission_map(figdir, world_map, lineage, relevant_table):
 def plot_date_map(figdir, with_info, lineage):
 
     muted_pal = sns.cubehelix_palette(as_cmap=True, reverse=True)
-
+    
     fig, ax = plt.subplots(figsize=(10,10))
 
     with_info = with_info.to_crs("EPSG:4326")
