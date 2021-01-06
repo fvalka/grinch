@@ -9,6 +9,7 @@ from epiweeks import Week
 
 
 from mpl_toolkits.axes_grid1 import make_axes_locatable
+from matplotlib import cm
 import pandas as pd
 import datetime as dt
 import seaborn as sns
@@ -239,7 +240,6 @@ def plot_count_map(figdir, with_info, lineage):
 
     plt.savefig(os.path.join(figdir,f"Map_of_{lineage}_sequence_counts.svg"), format='svg', bbox_inches='tight')
 
-
 def plot_bars(figdir, locations_to_dates, lineage):
 
     x = []
@@ -364,6 +364,66 @@ def flight_data_plot(figdir, flight_data,locations_to_dates,lineage):
     [ax.spines[loc].set_visible(False) for loc in ['top','right']]
 
     plt.savefig(os.path.join(figdir,f"Air_traffic_by_destination_{lineage}.svg"), format='svg', bbox_inches='tight')
+
+
+def plot_bars_by_freq(figdir, locations_to_dates, country_new_seqs, loc_to_earliest_date,lineage):
+
+    freq_dict = {}
+    for country, all_dates in locations_to_dates.items():
+        total = country_new_seqs[country]
+        freq = round(len(all_dates)/total,2)
+        freq_dict[country] = freq
+
+    x = []
+    y = []
+    z = []
+    text_labels = []
+    counts = []
+    sortable_data = []
+
+    for k in locations_to_dates:
+
+        count = len(locations_to_dates[k])
+        counts.append(count)
+        freq = freq_dict[k]
+        sortable_data.append((count, k, freq))
+    
+    for k in sorted(sortable_data, key = lambda x : x[0], reverse=True):
+        count,location,freq=k
+        text_labels.append(count)
+        y.append(np.log10(count))
+        x.append(location.replace("_", " ").title())
+        z.append(freq)
+
+    data = {'Country':x, 
+            'Count':y,
+            "Frequency":z} 
+  
+    # Create DataFrame 
+    df = pd.DataFrame(data) 
+
+    muted_pal = sns.cubehelix_palette(as_cmap=True)
+
+    fig, ax = plt.subplots(1,1, figsize=(7,3), frameon=False)
+    
+    sns.barplot(x="Country", y="Count", data=df, dodge=False, palette=muted_pal(df["Frequency"]))
+    plt.colorbar(cm.ScalarMappable(cmap=muted_pal),  shrink=0.5)
+    [ax.spines[loc].set_visible(False) for loc in ['top','right',"left"]]
+
+    yticks = ax.get_yticks()
+    ax.set_yticklabels([(int(10**ytick)) for ytick in yticks])
+    
+    rects = ax.patches
+    for rect, label in zip(rects, text_labels):
+        height = rect.get_height()
+        ax.text(rect.get_x() + rect.get_width() / 2, height + 0.1, label,
+                ha='center', va='bottom',fontsize=8)
+    
+    plt.ylabel("Sequence count\n(log10)")
+    plt.xlabel("Country")
+    plt.xticks(rotation=90)
+
+    plt.savefig(os.path.join(figdir,f"Sequence_count_per_country_{lineage}_by_frequency.svg"), format='svg', bbox_inches='tight')
 
 
 def plot_frequency_new_sequences(figdir, locations_to_dates, country_new_seqs, loc_to_earliest_date, lineage):
@@ -574,6 +634,7 @@ def plot_figures(world_map_file, figdir, metadata, lineages_of_interest,flight_d
         plot_count_map(figdir, with_info, lineage)
         make_transmission_map(figdir, world_map, lineage, relevant_table)
         plot_bars(figdir, locations_to_dates, lineage)
+        plot_bars_by_freq(figdir, locations_to_dates, country_new_seqs, loc_to_earliest_date,lineage)
         cumulative_seqs_over_time(figdir,locations_to_dates,lineage)
         plot_frequency_new_sequences(figdir, locations_to_dates, country_new_seqs, loc_to_earliest_date, lineage)
         plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earliest_date, country_dates, lineage)
