@@ -103,13 +103,30 @@ def make_dataframe(metadata, conversion_dict2, omitted, lineage_of_interest, cou
 
     df_dict = defaultdict(list)
 
+    all_earliest_dates = []
+    date_to_number = {}
+    number_to_date = {}
+
     for country, dates in locations_to_dates.items():
         loc_seq_counts[country] = len(dates)
         loc_to_earliest_date[country] = min(dates)
-        
+    
+    for i,v in loc_to_earliest_date.items():
+        all_earliest_dates.append(v)
+
+    earliest_date_count = Counter(all_earliest_dates)
+    count = 0
+    for i in sorted(earliest_date_count.keys()):
+        date_to_number[i] = count
+        number_to_date[count] = i
+        count += 1
+    
+    for country, date in locations_to_dates.items():        
         df_dict["admin"].append(country.upper().replace(" ","_"))
         df_dict["earliest_date"].append(min(dates))
         df_dict["number_of_sequences"].append(np.log(len(dates)))
+        df_dict["date_number"].append(date_to_number[min(dates)])
+
         
     info_df = pd.DataFrame(df_dict)
 
@@ -131,20 +148,24 @@ def make_dataframe(metadata, conversion_dict2, omitted, lineage_of_interest, cou
                     country_dates[new_country].append(date)
 
 
-    return with_info, locations_to_dates, country_new_seqs, loc_to_earliest_date, country_dates
+    return with_info, locations_to_dates, country_new_seqs, loc_to_earliest_date, country_dates, number_to_date
 
-def plot_date_map(figdir, with_info, lineage):
+def plot_date_map(figdir, with_info, lineage, number_to_date):
 
     muted_pal = sns.cubehelix_palette(as_cmap=True, reverse=True)
 
     fig, ax = plt.subplots(figsize=(10,10))
 
-
     with_info = with_info.to_crs("EPSG:4326")
 
-    with_info.plot(ax=ax, cmap=muted_pal, legend=True, column="earliest_date", 
-                    legend_kwds={'bbox_to_anchor':(-.03, 1.05),'fontsize':8,'frameon':False},
+    with_info.plot(ax=ax, cmap=muted_pal, legend=True, column="date_number", 
+                    legend_kwds={'shrink':0.3},
+                    #legend_kwds={'bbox_to_anchor':(-.03, 1.05),'fontsize':8,'frameon':False},
                     missing_kwds={"color": "lightgrey","label": "No variant recorded"})
+
+    colourbar = ax.get_figure().get_axes()[1]
+    yticks = colourbar.get_yticks()
+    colourbar.set_yticklabels([number_to_date[ytick] for ytick in yticks])
     
     ax.axis("off")
     
@@ -491,12 +512,12 @@ def plot_figures(world_map_file, figdir, metadata, lineages_of_interest,flight_d
     
 
     for lineage in lineages_of_interest:
-        with_info, locations_to_dates, country_new_seqs, loc_to_earliest_date, country_dates = make_dataframe(metadata, conversion_dict2, omitted, lineage, countries, world_map)
+        with_info, locations_to_dates, country_new_seqs, loc_to_earliest_date, country_dates, number_to_date = make_dataframe(metadata, conversion_dict2, omitted, lineage, countries, world_map)
 
         if lineage == "B.1.1.7":
            flight_data_plot(figdir, flight_data,locations_to_dates)
 
-        plot_date_map(figdir, with_info, lineage)
+        plot_date_map(figdir, with_info, lineage, number_to_date)
         plot_count_map(figdir, with_info, lineage)
         plot_bars(figdir, locations_to_dates, lineage)
         cumulative_seqs_over_time(figdir,locations_to_dates,lineage)
