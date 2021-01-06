@@ -1,0 +1,19 @@
+on: [push, pull_request]
+defaults:
+  run:
+    shell: bash -el {0}
+
+jobs:
+  setup-conda:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          environment-file: environment.yaml
+          activate-environment: grinch
+      - run: conda info --envs
+      - run: pip install -U pip wheel
+      - run: pip install .
+      - run: grinch -h
+      # Add more steps here
