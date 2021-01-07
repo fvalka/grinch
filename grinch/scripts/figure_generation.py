@@ -3,12 +3,14 @@ import csv
 from collections import defaultdict
 from collections import Counter
 from collections import OrderedDict
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from epiweeks import Week
 
 
 from mpl_toolkits.axes_grid1 import make_axes_locatable
+from matplotlib import cm
 import pandas as pd
 import datetime as dt
 import seaborn as sns
@@ -27,7 +29,10 @@ import os
 # ###
 
 plt.rcParams.update({'font.size': 10})
-
+new_rc_params = {'text.usetex': False,
+"svg.fonttype": 'none'
+}
+mpl.rcParams.update(new_rc_params)
 def prep_map(world_map_file):
 
     world_map = geopandas.read_file(world_map_file)
@@ -104,13 +109,30 @@ def make_dataframe(metadata, conversion_dict2, omitted, lineage_of_interest, cou
 
     df_dict = defaultdict(list)
 
+    all_earliest_dates = []
+    date_to_number = {}
+    number_to_date = {}
+
     for country, dates in locations_to_dates.items():
         loc_seq_counts[country] = len(dates)
         loc_to_earliest_date[country] = min(dates)
-        
+    
+    for i,v in loc_to_earliest_date.items():
+        all_earliest_dates.append(v)
+
+    earliest_date_count = Counter(all_earliest_dates)
+    count = 0
+    for i in sorted(earliest_date_count.keys()):
+        date_to_number[i] = count
+        number_to_date[count] = i
+        count += 1
+    
+    for country, date in locations_to_dates.items():        
         df_dict["admin"].append(country.upper().replace(" ","_"))
         df_dict["earliest_date"].append(min(dates))
         df_dict["number_of_sequences"].append(np.log(len(dates)))
+        df_dict["date_number"].append(date_to_number[min(dates)])
+
         
     info_df = pd.DataFrame(df_dict)
 
@@ -132,7 +154,7 @@ def make_dataframe(metadata, conversion_dict2, omitted, lineage_of_interest, cou
                     country_dates[new_country].append(date)
 
 
-    return with_info, locations_to_dates, country_new_seqs, loc_to_earliest_date, country_dates
+    return with_info, locations_to_dates, country_new_seqs, loc_to_earliest_date, country_dates, number_to_date
 
 def make_transmission_map(figdir, world_map, lineage, relevant_table):
 
@@ -165,24 +187,27 @@ def make_transmission_map(figdir, world_map, lineage, relevant_table):
     patches = [plt.plot([],[], marker="o", ms=10, ls="", mec=None, color=colour_dict[i], 
                 label="{:s}".format(label_dict[i]) )[0]  for i in (label_dict.keys())]
 
-    ax.legend()
+    ax.legend(bbox_to_anchor=(-.03, 1.05),fontsize=8,frameon=False)
 
     ax.axis("off")            
     plt.savefig(os.path.join(figdir,f"Map_of_{lineage}_local_transmission.svg"), format='svg', bbox_inches='tight')
 
-
-
-def plot_date_map(figdir, with_info, lineage):
+def plot_date_map(figdir, with_info, lineage, number_to_date)::
 
     muted_pal = sns.cubehelix_palette(as_cmap=True, reverse=True)
-
+    
     fig, ax = plt.subplots(figsize=(10,10))
 
     with_info = with_info.to_crs("EPSG:4326")
 
-    with_info.plot(ax=ax, cmap=muted_pal, legend=True, column="earliest_date", 
-                    legend_kwds={'bbox_to_anchor':(-.03, 1.05),'fontsize':8,'frameon':False},
+    with_info.plot(ax=ax, cmap=muted_pal, legend=True, column="date_number", 
+                    legend_kwds={'shrink':0.3},
+                    #legend_kwds={'bbox_to_anchor':(-.03, 1.05),'fontsize':8,'frameon':False},
                     missing_kwds={"color": "lightgrey","label": "No variant recorded"})
+
+    colourbar = ax.get_figure().get_axes()[1]
+    yticks = colourbar.get_yticks()
+    colourbar.set_yticklabels([number_to_date[ytick] for ytick in yticks])
     
     ax.axis("off")
     
@@ -238,7 +263,6 @@ def plot_count_map(figdir, with_info, lineage):
     # colourbar.set_yticklabels([round(math.exp(ytick)) for ytick in yticks])
 
     plt.savefig(os.path.join(figdir,f"Map_of_{lineage}_sequence_counts.svg"), format='svg', bbox_inches='tight')
-
 
 def plot_bars(figdir, locations_to_dates, lineage):
 
@@ -364,6 +388,66 @@ def flight_data_plot(figdir, flight_data,locations_to_dates,lineage):
     [ax.spines[loc].set_visible(False) for loc in ['top','right']]
 
     plt.savefig(os.path.join(figdir,f"Air_traffic_by_destination_{lineage}.svg"), format='svg', bbox_inches='tight')
+
+
+def plot_bars_by_freq(figdir, locations_to_dates, country_new_seqs, loc_to_earliest_date,lineage):
+
+    freq_dict = {}
+    for country, all_dates in locations_to_dates.items():
+        total = country_new_seqs[country]
+        freq = round(len(all_dates)/total,2)
+        freq_dict[country] = freq
+
+    x = []
+    y = []
+    z = []
+    text_labels = []
+    counts = []
+    sortable_data = []
+
+    for k in locations_to_dates:
+
+        count = len(locations_to_dates[k])
+        counts.append(count)
+        freq = freq_dict[k]
+        sortable_data.append((count, k, freq))
+    
+    for k in sorted(sortable_data, key = lambda x : x[0], reverse=True):
+        count,location,freq=k
+        text_labels.append(count)
+        y.append(np.log10(count))
+        x.append(location.replace("_", " ").title())
+        z.append(freq)
+
+    data = {'Country':x, 
+            'Count':y,
+            "Frequency":z} 
+  
+    # Create DataFrame 
+    df = pd.DataFrame(data) 
+
+    muted_pal = sns.cubehelix_palette(as_cmap=True)
+
+    fig, ax = plt.subplots(1,1, figsize=(7,3), frameon=False)
+    
+    sns.barplot(x="Country", y="Count", data=df, dodge=False, palette=muted_pal(df["Frequency"]))
+    plt.colorbar(cm.ScalarMappable(cmap=muted_pal),  shrink=0.5)
+    [ax.spines[loc].set_visible(False) for loc in ['top','right',"left"]]
+
+    yticks = ax.get_yticks()
+    ax.set_yticklabels([(int(10**ytick)) for ytick in yticks])
+    
+    rects = ax.patches
+    for rect, label in zip(rects, text_labels):
+        height = rect.get_height()
+        ax.text(rect.get_x() + rect.get_width() / 2, height + 0.1, label,
+                ha='center', va='bottom',fontsize=8)
+    
+    plt.ylabel("Sequence count\n(log10)")
+    plt.xlabel("Country")
+    plt.xticks(rotation=90)
+
+    plt.savefig(os.path.join(figdir,f"Sequence_count_per_country_{lineage}_by_frequency.svg"), format='svg', bbox_inches='tight')
 
 
 def plot_frequency_new_sequences(figdir, locations_to_dates, country_new_seqs, loc_to_earliest_date, lineage):
@@ -561,7 +645,7 @@ def plot_figures(world_map_file, figdir, metadata, lineages_of_interest,flight_d
     conversion_dict2, omitted = prep_inputs()
 
     for lineage in lineages_of_interest:
-        with_info, locations_to_dates, country_new_seqs, loc_to_earliest_date, country_dates = make_dataframe(metadata, conversion_dict2, omitted, lineage, countries, world_map)
+        with_info, locations_to_dates, country_new_seqs, loc_to_earliest_date, country_dates, number_to_date = make_dataframe(metadata, conversion_dict2, omitted, lineage, countries, world_map)
 
         if lineage == "B.1.1.7":
             flight_data_plot(figdir, flight_data_b117,locations_to_dates,"B.1.1.7")
@@ -570,10 +654,11 @@ def plot_figures(world_map_file, figdir, metadata, lineages_of_interest,flight_d
             flight_data_plot(figdir, flight_data_b1351,locations_to_dates,"B.1.351")
             relevant_table = table_b1351
 
-        plot_date_map(figdir, with_info, lineage)
+        plot_date_map(figdir, with_info, lineage, number_to_date)
         plot_count_map(figdir, with_info, lineage)
         make_transmission_map(figdir, world_map, lineage, relevant_table)
         plot_bars(figdir, locations_to_dates, lineage)
+        plot_bars_by_freq(figdir, locations_to_dates, country_new_seqs, loc_to_earliest_date,lineage)
         cumulative_seqs_over_time(figdir,locations_to_dates,lineage)
         plot_frequency_new_sequences(figdir, locations_to_dates, country_new_seqs, loc_to_earliest_date, lineage)
         plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earliest_date, country_dates, lineage)

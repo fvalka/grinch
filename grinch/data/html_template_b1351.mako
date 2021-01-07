@@ -555,6 +555,7 @@
         <p>The number of ticketed origin-to-destination journeys from South African airports to countries outside South Africa during October 2020.</p> 
         <p>Colours indicate numbers of published genomes of B.1.351 deposited on GISAID. Grey bars indicate countries that have reported the presence of the variant but have not yet published B.1.351 sequences on GISAID. White bars indicate countries with no reports of B.1.351.</p> 
         <p>Flight data come from the International Air Transportation Association that capture anonymized, passenger-level flight itinerary data, comprising both commercial flights and scheduled charter flights. These data account for ~90% of global air travel volumes, with the remaining volumes modelled using market intelligence. We report data from destinations including >300 passengers.</p>
+        <p>Note that flight data reflects final-destination on a booked journey, we cannot account for instances where two separate tickets were purchased. Also, this data will not reflect volume of traffic over land or other modes of transport.</p>
         <p>Data from Kamran Khan, Isaac Bogoch, Alexander Watts, Oliver Pybus, Moritz Kraemer</p>
           <div class=figure-container>
             ${flight_figure}
@@ -568,6 +569,7 @@
             <th style="width:20%;text-align:center">Earliest report</th>
             <th style="width:20%;text-align:center">Date local transmission</th>
             <th style="width:10%;text-align:center">Local transmission</th>
+            <th style="width:10%">Method of surveillance</th>
             <th style="width:20%;">Source</th>
           </tr>
             % for row in import_report:
@@ -576,6 +578,7 @@
                 <td style="text-align:center">${row["Earliest report"]}</td>
                 <td style="text-align:center">${row["Date local transmission"]}</td>
                 <td style="text-align:center">${row["Local transmission"]}</td>
+                <td>${row["Method of surveillance"]}</td>
                 <td><a href='${row["Source"]}' style="color:#86b0a6">${row["Source"]}</a></td>
             </tr>
             % endfor

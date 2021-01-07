@@ -15,7 +15,11 @@ rule render_report:
         report_b117 = os.path.join(config["outdir"],"report", f"{output_prefix}_B.1.1.7.html"),
         report_b1351 = os.path.join(config["outdir"],"report", f"{output_prefix}_B.1.351.html")
     run:
+<<<<<<< HEAD
         fig_gen.plot_figures(config["world_map_file"], config["figdir"], input.metadata, config["lineages_of_interest"],config["flight_data_b117"],config["flight_data_b1351"],  config["import_report_b117"], config["import_report_b1351"])
+=======
+        fig_gen.plot_figures(config["world_map_file"], config["figdir"], input.metadata, config["lineages_of_interest"],config["flight_data_b117"],config["flight_data_b1351"],config["import_report_b117"],config["import_report_b1351"])
+>>>>>>> 22de29a0b7915f5f1881134bd85898e55dceb014
         print(f"Generated the figure files  in {config['figdir']}")
         shell(
         """
