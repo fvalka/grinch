@@ -127,7 +127,7 @@ def make_dataframe(metadata, conversion_dict2, omitted, lineage_of_interest, cou
         number_to_date[count] = i
         count += 1
     
-    for country, date in locations_to_dates.items():        
+    for country, dates in locations_to_dates.items():        
         df_dict["admin"].append(country.upper().replace(" ","_"))
         df_dict["earliest_date"].append(min(dates))
         df_dict["number_of_sequences"].append(np.log(len(dates)))
@@ -192,7 +192,7 @@ def make_transmission_map(figdir, world_map, lineage, relevant_table):
     ax.axis("off")            
     plt.savefig(os.path.join(figdir,f"Map_of_{lineage}_local_transmission.svg"), format='svg', bbox_inches='tight')
 
-def plot_date_map(figdir, with_info, lineage, number_to_date)::
+def plot_date_map(figdir, with_info, lineage, number_to_date):
 
     muted_pal = sns.cubehelix_palette(as_cmap=True, reverse=True)
     
@@ -207,6 +207,7 @@ def plot_date_map(figdir, with_info, lineage, number_to_date)::
 
     colourbar = ax.get_figure().get_axes()[1]
     yticks = colourbar.get_yticks()
+
     colourbar.set_yticklabels([number_to_date[ytick] for ytick in yticks])
     
     ax.axis("off")
