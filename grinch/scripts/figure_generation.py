@@ -189,29 +189,29 @@ def plot_date_map(figdir, with_info, lineage):
     plt.savefig(os.path.join(figdir,f"Date_of_earliest_{lineage}_detected.svg"), format='svg', bbox_inches='tight')
 
 
-def plot_report_map(figdir, with_info, lineage):
+# def plot_report_map(figdir, with_info, lineage):
 
-    muted_pal = sns.cubehelix_palette(as_cmap=True)
-    dark = mpatches.Patch(color=muted_pal.colors[-1], label='Local transmission')
-    light = mpatches.Patch(color=muted_pal.colors[0], label='Imports reported')
-    none = mpatches.Patch(color="lightgrey", label='No variant reported')
-    fig, ax = plt.subplots(figsize=(10,10))
+#     muted_pal = sns.cubehelix_palette(as_cmap=True)
+#     dark = mpatches.Patch(color=muted_pal.colors[-1], label='Local transmission')
+#     light = mpatches.Patch(color=muted_pal.colors[0], label='Imports reported')
+#     none = mpatches.Patch(color="lightgrey", label='No variant reported')
+#     fig, ax = plt.subplots(figsize=(10,10))
 
-    with_info = with_info.to_crs("EPSG:4326")
-    with_info.plot(ax=ax, cmap=muted_pal, legend=False, column="number_of_sequences", 
-                    # legend_kwds={'bbox_to_anchor':(-.03, 1.05),'fontsize':7,'frameon':False},
-                    missing_kwds={"color": "lightgrey","label": "No variant reported"})
+#     with_info = with_info.to_crs("EPSG:4326")
+#     with_info.plot(ax=ax, cmap=muted_pal, legend=False, column="number_of_sequences", 
+#                     # legend_kwds={'bbox_to_anchor':(-.03, 1.05),'fontsize':7,'frameon':False},
+#                     missing_kwds={"color": "lightgrey","label": "No variant reported"})
 
     
 
-    ax.legend(handles=[dark,light,none],bbox_to_anchor=(-.03, 1.05),fontsize=8,frameon=False)
-    ax.axis("off")
+#     ax.legend(handles=[dark,light,none],bbox_to_anchor=(-.03, 1.05),fontsize=8,frameon=False)
+#     ax.axis("off")
 
-    # colourbar = ax.get_figure().get_axes()[1]
-    # yticks = colourbar.get_yticks()
-    # colourbar.set_yticklabels([round(math.exp(ytick)) for ytick in yticks])
+#     # colourbar = ax.get_figure().get_axes()[1]
+#     # yticks = colourbar.get_yticks()
+#     # colourbar.set_yticklabels([round(math.exp(ytick)) for ytick in yticks])
 
-    plt.savefig(os.path.join(figdir,f"Map_of_{lineage}_sequence_counts.svg"), format='svg', bbox_inches='tight')
+#     plt.savefig(os.path.join(figdir,f"Map_of_{lineage}_sequence_counts.svg"), format='svg', bbox_inches='tight')
 
 
 
