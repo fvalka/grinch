@@ -1,7 +1,7 @@
 on: [push, pull_request]
 defaults:
   run:
-    shell: bash -el {0}
+    shell: bash -l {0}
 
 jobs:
   setup-conda:
@@ -15,5 +15,6 @@ jobs:
       - run: conda info --envs
       - run: pip install -U pip wheel
       - run: pip install .
-      - run: grinch -h
+      - run: grinch --version
+      - run: grinch --help
       # Add more steps here
