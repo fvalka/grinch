@@ -205,7 +205,17 @@ def plot_date_map(figdir, with_info, lineage, number_to_date):
     colourbar = ax.get_figure().get_axes()[1]
     yticks = colourbar.get_yticks()
 
-    colourbar.set_yticklabels([number_to_date[ytick] for ytick in yticks])
+    # print(yticks)
+    newlabels = []
+    for tick in yticks:
+        try:
+            newlabels.append(number_to_date[tick])
+        except KeyError:
+            # print(tick)
+            newlabels.append("")
+
+    # colourbar.set_yticklabels([number_to_date[ytick] for ytick in yticks])
+    colourbar.set_yticklabels(newlabels)
     
     ax.axis("off")
     
