@@ -29,10 +29,7 @@ import os
 # ###
 
 plt.rcParams.update({'font.size': 10})
-new_rc_params = {'text.usetex': False,
-"svg.fonttype": 'none'
-}
-mpl.rcParams.update(new_rc_params)
+
 def prep_map(world_map_file):
 
     world_map = geopandas.read_file(world_map_file)
