@@ -94,10 +94,14 @@ def make_dataframe(metadata, conversion_dict2, omitted, lineage_of_interest, cou
                         new_country = seq_country
                     else:
                         new_country = ""
+                
                 if new_country not in countries and new_country != "":
                     pass
                 elif new_country != "":
-                    locations_to_dates[new_country].append(dt.datetime.strptime(seq["sample_date"], "%Y-%m-%d").date())
+                    try:
+                        locations_to_dates[new_country].append(dt.datetime.strptime(seq["sample_date"], "%Y-%m-%d").date())
+                    except:
+                        pass
                 country_to_new_country[seq_country] = new_country
     
 
