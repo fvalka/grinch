@@ -178,7 +178,6 @@ def make_transmission_map(figdir, world_map, lineage, relevant_table):
     trans_nona = with_trans_info.fillna(-1)
     trans_nona = trans_nona.dropna()
 
-
     colour_dict = {0.0:"#edd1cb", 1.0: '#aa688f', 2.0:'#2d1e3e', -1:"#d3d3d3"}
     label_dict = {0.0:"status_unknown",1.0:"imported_only",2.0:"local_transmission", -1:"No variant recorded"}
 
@@ -192,6 +191,8 @@ def make_transmission_map(figdir, world_map, lineage, relevant_table):
 
     ax.axis("off")            
     plt.savefig(os.path.join(figdir,f"Map_of_{lineage}_local_transmission.svg"), format='svg', bbox_inches='tight')
+
+    return transmission_df
 
 def plot_date_map(figdir, with_info, lineage, number_to_date):
 
@@ -317,7 +318,7 @@ def plot_bars(figdir, locations_to_dates, lineage):
 
     plt.savefig(os.path.join(figdir,f"Sequence_count_per_country_{lineage}.svg"), format='svg', bbox_inches='tight')
 
-def flight_data_plot(figdir, flight_data,locations_to_dates,lineage):
+def flight_data_plot(figdir, flight_data,locations_to_dates,lineage, transmission_df):
     if lineage == "B.1.351":
         threshold = 300
     elif lineage == "B.1.1.7":
@@ -333,7 +334,6 @@ def flight_data_plot(figdir, flight_data,locations_to_dates,lineage):
                     data.append((row["country"], int(row["flights"]), int(row["gisaidNumber"])))
 
     sorted_data = sorted(data, key=lambda x : x[1], reverse=True)
-    
 
     gisaid_counts = {}
     for i in locations_to_dates:
@@ -662,16 +662,15 @@ def plot_figures(world_map_file, figdir, metadata, lineages_of_interest,flight_d
     for lineage in lineages_of_interest:
         with_info, locations_to_dates, country_new_seqs, loc_to_earliest_date, country_dates, number_to_date = make_dataframe(metadata, conversion_dict2, omitted, lineage, countries, world_map)
 
-        if lineage == "B.1.1.7":
-            flight_data_plot(figdir, flight_data_b117,locations_to_dates,"B.1.1.7")
-            relevant_table = table_b117
+        if lineage == "B.1.1.7":            
+            transmission_df = make_transmission_map(figdir, world_map, lineage, table_b117)
+            flight_data_plot(figdir, flight_data_b117,locations_to_dates,"B.1.1.7", transmission_df)
         elif lineage == "B.1.351":
-            flight_data_plot(figdir, flight_data_b1351,locations_to_dates,"B.1.351")
-            relevant_table = table_b1351
+            transmission_df = make_transmission_map(figdir, world_map, lineage, table_b1351)
+            flight_data_plot(figdir, flight_data_b1351,locations_to_dates,"B.1.351", transmission_df)
 
         plot_date_map(figdir, with_info, lineage, number_to_date)
         plot_count_map(figdir, with_info, lineage)
-        make_transmission_map(figdir, world_map, lineage, relevant_table)
         plot_bars(figdir, locations_to_dates, lineage)
         plot_bars_by_freq(figdir, locations_to_dates, country_new_seqs, loc_to_earliest_date,lineage)
         cumulative_seqs_over_time(figdir,locations_to_dates,lineage)
