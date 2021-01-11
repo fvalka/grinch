@@ -160,6 +160,7 @@ def make_dataframe(metadata, conversion_dict2, omitted, lineage_of_interest, cou
 def make_transmission_map(figdir, world_map, lineage, relevant_table):
 
     df_dict = defaultdict(list)
+    info_dict = {}
 
     with open(relevant_table) as f:
         data = csv.DictReader(f)
@@ -167,8 +168,10 @@ def make_transmission_map(figdir, world_map, lineage, relevant_table):
             df_dict["admin"].append(line["Country"].upper().replace(" ","_"))            
             if line["imported_local"] == "1":
                 df_dict["transmission_number"].append(2)
+                info_dict[line["Country"]] = 2
             elif line["imported_local"] == "0":
                 df_dict["transmission_number"].append(1)
+                info_dict[line["Country"]] = 1
             elif line["imported_local"] == "":
                 df_dict["transmission_number"].append(0)
             
@@ -192,7 +195,7 @@ def make_transmission_map(figdir, world_map, lineage, relevant_table):
     ax.axis("off")            
     plt.savefig(os.path.join(figdir,f"Map_of_{lineage}_local_transmission.svg"), format='svg', bbox_inches='tight')
 
-    return transmission_df
+    return info_dict
 
 def plot_date_map(figdir, with_info, lineage, number_to_date):
 
@@ -225,32 +228,6 @@ def plot_date_map(figdir, with_info, lineage, number_to_date):
     ax.axis("off")
     
     plt.savefig(os.path.join(figdir,f"Date_of_earliest_{lineage}_detected.svg"), format='svg', bbox_inches='tight')
-
-
-# def plot_report_map(figdir, with_info, lineage):
-
-#     muted_pal = sns.cubehelix_palette(as_cmap=True)
-#     dark = mpatches.Patch(color=muted_pal.colors[-1], label='Local transmission')
-#     light = mpatches.Patch(color=muted_pal.colors[0], label='Imports reported')
-#     none = mpatches.Patch(color="lightgrey", label='No variant reported')
-#     fig, ax = plt.subplots(figsize=(10,10))
-
-#     with_info = with_info.to_crs("EPSG:4326")
-#     with_info.plot(ax=ax, cmap=muted_pal, legend=False, column="number_of_sequences", 
-#                     # legend_kwds={'bbox_to_anchor':(-.03, 1.05),'fontsize':7,'frameon':False},
-#                     missing_kwds={"color": "lightgrey","label": "No variant reported"})
-
-    
-
-#     ax.legend(handles=[dark,light,none],bbox_to_anchor=(-.03, 1.05),fontsize=8,frameon=False)
-#     ax.axis("off")
-
-#     # colourbar = ax.get_figure().get_axes()[1]
-#     # yticks = colourbar.get_yticks()
-#     # colourbar.set_yticklabels([round(math.exp(ytick)) for ytick in yticks])
-
-#     plt.savefig(os.path.join(figdir,f"Map_of_{lineage}_sequence_counts.svg"), format='svg', bbox_inches='tight')
-
 
 
 def plot_count_map(figdir, with_info, lineage):
@@ -318,44 +295,35 @@ def plot_bars(figdir, locations_to_dates, lineage):
 
     plt.savefig(os.path.join(figdir,f"Sequence_count_per_country_{lineage}.svg"), format='svg', bbox_inches='tight')
 
-def flight_data_plot(figdir, flight_data,locations_to_dates,lineage, transmission_df):
-    if lineage == "B.1.351":
-        threshold = 300
-    elif lineage == "B.1.1.7":
-        threshold = 5000
+def flight_data_plot(figdir, flight_data,locations_to_dates,lineage, threshold, info_dict, central_loc):
     data = []
     with open(flight_data,"r") as f:
         reader = csv.DictReader(f)
         for row in reader:
             if int(row["flights"]) > threshold:
-                if row["gisaidNumber"] =="":
-                    data.append((row["country"], int(row["flights"]), 0))
-                else:
-                    data.append((row["country"], int(row["flights"]), int(row["gisaidNumber"])))
+                data.append((row["country"], int(row["flights"])))
+                # if row["gisaidNumber"] == "" or row["gisaidNumber"] == "9999":
+                #     data.append((row["country"], int(row["flights"]), 0))
+                # else:
+                #     data.append((row["country"], int(row["flights"]), int(row["gisaidNumber"])))
 
     sorted_data = sorted(data, key=lambda x : x[1], reverse=True)
 
     gisaid_counts = {}
     for i in locations_to_dates:
         if len(locations_to_dates[i]) != 0:
-            
             loc = i.replace("_", " ").title()
             if loc == "United States Of America":
                 loc = "United States of America"
-            if lineage == "B.1.1.7":
-                if loc != "United Kingdom":
-                    gisaid_counts[loc] = len(locations_to_dates[i])
-            elif lineage == "B.1.351":
-                if loc != "South Africa":
-                    gisaid_counts[loc] = len(locations_to_dates[i])
+            if loc != central_loc:
+                gisaid_counts[loc] = len(locations_to_dates[i])
 
-    
     counts = sorted(list(set(gisaid_counts.values())))
-    print(counts)
+
     muted_pal = sns.cubehelix_palette(gamma=1.2,n_colors=len(counts)+2)
-    muted_dict = {0: "white",9999:"lightgrey"}
     legend_patches = [mpatches.Patch(color="white", label='0')]
-    print(muted_pal)
+
+    muted_dict = {}
     for i in range(0,len(counts)):
 
         legend_patches.append(mpatches.Patch(color=muted_pal[i], label=counts[i]))
@@ -363,19 +331,21 @@ def flight_data_plot(figdir, flight_data,locations_to_dates,lineage, transmissio
 
     legend_patches.append(mpatches.Patch(color="lightgrey", label='Reported'))
 
-    x,y,z=[],[],[]
-    no_seq_dict = {}
+    x,y = [],[]
+    reported_dict = {}
     for i in sorted_data:
         x.append(i[0])
         y.append(i[1])
-        z.append(i[2])
 
-        if i[2] == 9999:
-            no_seq_dict[i[0]] = "lightgrey"
-        elif i[2] == 0:
-            no_seq_dict[i[0]] = "white"
-        
-    d = {'country': x, 'flights': y,"gisaid_count":z}
+        if i[0] in info_dict:
+            if info_dict[i[0]] == 2 or info_dict[i[0]] == 1:
+                reported_dict[i[0]] = "lightgrey"
+            else:
+                reported_dict[i[0]] = "white"
+        else:
+            reported_dict[i[0]] = "white"   
+
+    d = {'country': x, 'flights': y}
     df = pd.DataFrame(data=d)
 
     muted_mapping = {}
@@ -383,14 +353,14 @@ def flight_data_plot(figdir, flight_data,locations_to_dates,lineage, transmissio
         if i in gisaid_counts:
             muted_mapping[i] = muted_dict[gisaid_counts[i]]
         else:
-            if i in no_seq_dict:
-                muted_mapping[i] = no_seq_dict[i]
+            if i in reported_dict:
+                muted_mapping[i] = reported_dict[i]
 
-    print(muted_mapping)
+    # print(muted_mapping)
     fig,ax = plt.subplots(figsize=(9,8))
     
     colours = [muted_mapping[i] for i in x ]
-    print(colours)
+    # print(colours)
     customPalette = sns.set_palette(sns.color_palette(colours))
     # colours = [[0.9157923182358403, 0.7887382324108813, 0.762379547318096], [0.35236581054056426, 0.19374450047758163, 0.36385783424464163], 'white', 'white', 'lightgrey', [0.22670646986529738, 0.13274650666137483, 0.2712570360553994], 'white', 'white', 'white', [0.6000254545207635, 0.34357712853426287, 0.49642279322522603], 'white', [0.9157923182358403, 0.7887382324108813, 0.762379547318096], [0.9157923182358403, 0.7887382324108813, 0.762379547318096], 'white', 'white', 'white', 'white', [0.7912783609518846, 0.5423668589478735, 0.6004332530547714], 'white', [0.47646765006069514, 0.2608912893189593, 0.4358483640521266], 'white', 'lightgrey', 'white', 'white', 'white', 'white', 'white', 'white', 'white', 'white', 'white', 'white', [0.7045593173634487, 0.43636067561566483, 0.5471495749492405], 'white', 'white', 'white', 'white', 'white', [0.8624113337043101, 0.664860941446331, 0.6706114180923453], 'white']
     sns.barplot(x="flights", y="country", palette=customPalette, edgecolor=".8", dodge=False,data=df)
@@ -662,12 +632,20 @@ def plot_figures(world_map_file, figdir, metadata, lineages_of_interest,flight_d
     for lineage in lineages_of_interest:
         with_info, locations_to_dates, country_new_seqs, loc_to_earliest_date, country_dates, number_to_date = make_dataframe(metadata, conversion_dict2, omitted, lineage, countries, world_map)
 
-        if lineage == "B.1.1.7":            
-            transmission_df = make_transmission_map(figdir, world_map, lineage, table_b117)
-            flight_data_plot(figdir, flight_data_b117,locations_to_dates,"B.1.1.7", transmission_df)
-        elif lineage == "B.1.351":
-            transmission_df = make_transmission_map(figdir, world_map, lineage, table_b1351)
-            flight_data_plot(figdir, flight_data_b1351,locations_to_dates,"B.1.351", transmission_df)
+        if lineage == "B.1.351":
+            threshold = 300
+            flight_data = flight_data_b1351
+            relevant_table = table_b1351
+            central_loc = "South Africa"
+        elif lineage == "B.1.1.7":
+            threshold = 5000
+            flight_data = flight_data_b117
+            relevant_table = table_b117
+            central_loc = "United Kingdom"
+        
+        info_dict = make_transmission_map(figdir, world_map, lineage, relevant_table)
+        flight_data_plot(figdir, flight_data,locations_to_dates,lineage, threshold, info_dict, central_loc)
+            
 
         plot_date_map(figdir, with_info, lineage, number_to_date)
         plot_count_map(figdir, with_info, lineage)

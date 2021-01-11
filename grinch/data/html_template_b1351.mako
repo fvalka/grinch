@@ -551,7 +551,7 @@
         % endfor
 
         <div></div>
-        <h3><strong>Figure 6</strong> | Air traffic from South Africa by destination</h3>              
+        <h3><strong>Figure 9</strong> | Air traffic from South Africa by destination</h3>              
         <p>The number of ticketed origin-to-destination journeys from South African airports to countries outside South Africa during October 2020.</p> 
         <p>Colours indicate numbers of published genomes of B.1.351 deposited on GISAID. Grey bars indicate countries that have reported the presence of the variant but have not yet published B.1.351 sequences on GISAID. White bars indicate countries with no reports of B.1.351.</p> 
         <p>Flight data come from the International Air Transportation Association that capture anonymized, passenger-level flight itinerary data, comprising both commercial flights and scheduled charter flights. These data account for ~90% of global air travel volumes, with the remaining volumes modelled using market intelligence. We report data from destinations including >300 passengers.</p>
