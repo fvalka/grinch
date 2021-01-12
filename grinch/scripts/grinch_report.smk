@@ -130,7 +130,7 @@ rule grab_metadata:
           --in-data {input.metadata} \
           --index-column sequence_name \
           --join-on sequence_name \
-          --new-columns country sample_date epi_week travel_history \
+          --new-columns covv_accession_id country sample_date epi_week travel_history \
           --where-column epi_week=edin_epi_week country=edin_admin_0 travel_history=edin_travel sample_date=covv_collection_date \
           --out-metadata {output.metadata} &> {log}
         """
