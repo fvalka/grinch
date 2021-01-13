@@ -130,7 +130,7 @@ rule grab_metadata:
           --in-data {input.metadata} \
           --index-column sequence_name \
           --join-on sequence_name \
-          --new-columns country sample_date epi_week travel_history \
+          --new-columns covv_accession_id country sample_date epi_week travel_history \
           --where-column epi_week=edin_epi_week country=edin_admin_0 travel_history=edin_travel sample_date=covv_collection_date \
           --out-metadata {output.metadata} &> {log}
         """
@@ -139,15 +139,14 @@ rule render_report:
     input:
         metadata = rules.grab_metadata.output.metadata,
         template_b117 = config["template_b117"],
-        template_b1351 = config["template_b1351"],
-        flight_data = config["flight_data"]
+        template_b1351 = config["template_b1351"]
     params:
         report_stem = os.path.join(config["outdir"],"report", f"{output_prefix}")
     output:
         report_b117 = os.path.join(config["outdir"],"report", f"{output_prefix}_B.1.1.7.html"),
         report_b1351 = os.path.join(config["outdir"],"report", f"{output_prefix}_B.1.351.html")
     run:
-        fig_gen.plot_figures(config["world_map_file"], config["figdir"], input.metadata, config["lineages_of_interest"], config["flight_data"], config["import_report_b117"], config["import_report_b1351"])
+        fig_gen.plot_figures(config["world_map_file"], config["figdir"], input.metadata, config["lineages_of_interest"],config["flight_data_b117"],config["flight_data_b1351"],config["import_report_b117"],config["import_report_b1351"])
 
         shell(
         """
@@ -159,6 +158,9 @@ rule render_report:
         --report {params.report_stem:q} \
         --command {config[command]:q} \
         --snps {config[snps]:q} \
-        --time {config[timestamp]:q}
+        --time {config[timestamp]:q} \
+        --import-report-b117 {config[import_report_b117]:q} \
+        --import-report-b1351 {config[import_report_b1351]:q}
         """)
         print(gfunk.green("Grinch report written to:") + f"{output.report_b117} and {output.report_b1351}")
+        

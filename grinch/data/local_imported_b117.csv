@@ -4,7 +4,7 @@ Denmark,2020-11-14,,1,community_sequencing,https://www.bbc.co.uk/news/world-5538
 Australia,2020-12-20,,0,travellers,https://www.dw.com/en/covid-19-more-countries-detect-mutated-uk-coronavirus-variant/a-56009203
 United Kingdom,2020-09-20,2020-09-20,1,community_sequencing,https://virological.org/t/preliminary-genomic-characterisation-of-an-emergent-sars-cov-2-lineage-in-the-uk-defined-by-a-novel-set-of-spike-mutations/563
 Turkey,2021-01-01,,0,travellers,https://www.cnnturk.com/video/turkiye/son-dakika-haberi-bakan-koca-acikladi-15-kiside-mutasyonlu-virus-ingiltereden-girisler-tamamen-durduruldu-video
-Belgium,2020-12-20,,0,,https://www.brusselstimes.com/news/belgium-all-news/146288/netherlands-bans-flights-from-uk-over-new-covid-mutation-found-coronavirus-van-ranst-who/
+Belgium,2020-12-20,2021-01-12,1,,https://www.brusselstimes.com/news/belgium-all-news/146288/netherlands-bans-flights-from-uk-over-new-covid-mutation-found-coronavirus-van-ranst-who/
 Canada,2020-12-26,2020-12-26,1,,https://www.cbc.ca/news/canada/toronto/ontario-confirms-first-cases-covid19-uk-variant-1.5855361
 Chile,2020-12-22,,0,travellers,https://www.reuters.com/article/uk-health-coronavirus-britain-variants-f/chile-records-first-case-of-british-variant-of-coronavirus-health-ministry-idUSKBN2931CS
 China,2020-12-04,,0,travellers,http://weekly.chinacdc.cn/en/article/doi/10.46234/ccdcw2020.270 | https://www.globaltimes.cn/page/202101/1211644.shtml
@@ -42,9 +42,11 @@ Greece,2021-01-03,,0,travellers,https://www.keeptalkinggreece.com/2021/01/03/cov
 Jamaica,2020-12-21,,0,travellers,https://www.thestkittsnevisobserver.com/new-corona-strain-arrives-in-jamaica-on-last-uk-flight/
 Austria,2021-01-04,,0,,https://www.sn.at/panorama/wissen/live-corona-mutationen-sind-in-oesterreich-angekommen-97891537
 Iran,2021-01-05,,0,travellers,https://www.jpost.com/breaking-news/iran-finds-first-case-of-new-virus-variant-in-traveler-from-uk-654329
-Philippines,2020-12-22,,1,,https://cnnphilippines.com/news/2021/1/6/Hong-Kong-detects-UK-COVID-19-variant-from-Manila-outbound-passenger-.html
+Philippines,2020-12-22,,,,https://cnnphilippines.com/news/2021/1/6/Hong-Kong-detects-UK-COVID-19-variant-from-Manila-outbound-passenger-.html
 Oman,2021-01-05,,0,travellers,https://www.reuters.com/article/us-health-coronavirus-oman-idUSKBN29A1G9
 Romania,2021-01-08,2021-01-08,1,community_sequencing,https://www.barrons.com/news/romania-confirms-first-case-of-new-uk-virus-strain-01610126705?tesla=y
 Slovakia,2021-01-05,2021-01-05,1,community_sequencing,https://spectator.sme.sk/c/22567045/new-strain-of-coronavirus-from-the-uk-confirmed-in-slovakia.html
 Russia,2021-01-10,,0,travellers,https://www.rferl.org/a/russia-confirms-first-case-of-new-coronavirus-strain/31041057.html
 Mexico,2020-12-29,,0,travellers,https://www.vallartadaily.com/new-coronavirus-strain-first-seen-in-britain-confirmed-in-mexico/
+Ecuador,2021-01-06,,0,travellers,https://www.aa.com.tr/en/americas/ecuador-records-first-case-of-new-coronavirus-variant/2106621
+Sri Lanka,2021-01-02,,,,,GISAID
