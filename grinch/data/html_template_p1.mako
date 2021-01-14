@@ -476,22 +476,19 @@
             <small class="text-muted">global report investigating novel coronavirus haplotypes </small>
             <hr>
         </header>
-        <h1>B.1.351 report
+        <h1>P.1 report
             <small class="text-muted">${date}</small>
         </h1>
         <br>
         </div>
-
         <!-- <p class="lead">grinch identified 5 clusters</p> -->
-    
     <br>
-
     <h3><strong>Description</strong></h3>
-    <p>South African lineage defined by new variant 501Y.V2 - A more detailed description of the lineage is here and a preprint describing the variant is <a href="https://www.medrxiv.org/content/10.1101/2020.12.21.20248640v1" style="color:#86b0a6">here</a></p>
+    <p>Brazilian lineage with variants of biological significants E484K, N501Y and K417T, described in recent virological posts: <a href="https://virological.org/t/genomic-characterisation-of-an-emergent-sars-cov-2-lineage-in-manaus-preliminary-findings/586" style="color:#86b0a6">here</a> and <a href="https://virological.org/t/phylogenetic-relationship-of-sars-cov-2-sequences-from-amazonas-with-emerging-brazilian-variants-harboring-mutations-e484k-and-n501y-in-the-spike-protein/585" style="color:#86b0a6">here</a>. P.1 lineage is an alias of lineage B.1.1.28.1. As described in <a href="https://www.nature.com/articles/s41564-020-0770-5" style="color:#86b0a6">Rambaut et al., 2020</a> when the lineage heirarchy reaches a certain depth (length of 5) lineage names are given an alias to prevent them from becoming infinitely long.</p>
     <h3><strong>Data source and processing</strong></h3>
     <p> This report is recent as of ${timestamp}. All SARS-CoV-2 sequences were downloaded from GISAID and genomes were de-duplicated based on GISAID sequence name – note that the publically available metadata may not fully allow us to de-duplicate by patient. Full data processing pipeline found <a href="https://github.com/cov-lineages/grinch" style="color:#86b0a6">here</a>.</p> 
     <p>The sequences were then assigned lineages with pangolin v2.1.7, pangoLEARN version 2021-01-11.</p>
-    <p> Pangolin assigns B.1.351 to any sequences with more than 5 of the 9 defining B.1.351 SNPs, defined in the preprint <a href="https://www.medrxiv.org/content/10.1101/2020.12.21.20248640v1" style="color:#86b0a6">here</a>.</p>
+    <p> Pangolin assigns P.1 to sequences with more than 10 of the 17 defining P.1 SNPs – described  <a href="https://virological.org/t/genomic-characterisation-of-an-emergent-sars-cov-2-lineage-in-manaus-preliminary-findings/586" style="color:#86b0a6">here</a> and <a href="https://virological.org/t/phylogenetic-relationship-of-sars-cov-2-sequences-from-amazonas-with-emerging-brazilian-variants-harboring-mutations-e484k-and-n501y-in-the-spike-protein/585" style="color:#86b0a6">here</a></p>
     <h3><strong>Table 1</strong> | Summary of sequence data   <input class="searchbar" type="text" id="myInput" onkeyup="myFunction('myInput','myTable')" placeholder="Search for lineage..." title="searchbar"></h3>
     <table class="table table-striped" id="myTable">
         <tr class="header">
@@ -525,8 +522,16 @@
               <th style="width:60%;">Information</th>
               </tr>
               <tr>
-                  <td>Count</td>
+                  <td>Sequence count</td>
                   <td>${row["Count"]}</td>
+              </tr>
+              <tr>
+                <td>Countries with sequences</td>
+                <td>${row["Country count"]}</td>
+              </tr>
+              <tr>
+                <td><a href="#table2link" style="color:#86b0a6">Countries reported</a></td>
+                <td>${len(import_report)}</td>
               </tr>
               <tr>
                 <td>Likely origin</td>
@@ -540,51 +545,41 @@
             
         <br>
           % for figure in row["figures"]:
-          <h3><strong>Figure ${figure["number"]}</strong> | ${figure["name"]}</h3>
             <div>
+              <h3><strong>Figure ${figure["number"]}</strong> | ${figure["name"]}</h3>
               <div class=figure-container>
                 ${figure['data']}
             </div>
             <br>
-          </div>
+            </div>
           % endfor
         % endfor
-
+        
         <div></div>
-        <h3><strong>Figure 9</strong> | Air traffic from South Africa by destination</h3>              
-        <p>The number of ticketed origin-to-destination journeys from South African airports to countries outside South Africa during October 2020.</p> 
-        <p>Colours indicate numbers of published genomes of B.1.351 deposited on GISAID. Grey bars indicate countries that have reported the presence of the variant but have not yet published B.1.351 sequences on GISAID. White bars indicate countries with no reports of B.1.351.</p> 
-        <p>Flight data come from the International Air Transportation Association that capture anonymized, passenger-level flight itinerary data, comprising both commercial flights and scheduled charter flights. These data account for ~90% of global air travel volumes, with the remaining volumes modelled using market intelligence. We report data from destinations including >300 passengers.</p>
-        <p>Note that flight data reflects final-destination on a booked journey, we cannot account for instances where two separate tickets were purchased. Also, this data will not reflect volume of traffic over land or other modes of transport.</p>
-        <p>Data from Kamran Khan, Isaac Bogoch, Alexander Watts, Oliver Pybus, Moritz Kraemer</p>
-          <div class=figure-container>
-            ${flight_figure}
-        </div>
-        <br>
-        <h3><a id = "table2link"></a><strong>Table 2</strong> | Reported B.1.351 imports. <input class="searchbar" type="text" id="myInput2" onkeyup="myFunction('myInput2','myTable2')" placeholder="Search for country..." title="searchbar"></h3>
-        <p><b>Country count:</b> ${len(import_report)}
-        <table class="table table-striped"  id="myTable2">
-          <tr class="header">
-            <th style="width:30%;">Country</th>
-            <th style="width:20%;text-align:center">Earliest report</th>
-            <th style="width:20%;text-align:center">Date local transmission</th>
-            <th style="width:10%;text-align:center">Local transmission</th>
-            <th style="width:10%">Method of surveillance</th>
-            <th style="width:20%;">Source</th>
+        
+      <h3><a id = "table2link"></a><strong>Table 2</strong> | Reported P.1 imports. <input class="searchbar" type="text" id="myInput2" onkeyup="myFunction('myInput2','myTable2')" placeholder="Search for country..." title="searchbar"></h3>
+      <p><b>Country count:</b> ${len(import_report)}
+      <table class="table table-striped"  id="myTable2">
+        <tr class="header">
+          <th style="width:30%;">Country</th>
+          <th style="width:20%;text-align:center">Earliest report</th>
+          <th style="width:20%;text-align:center">Date local transmission</th>
+          <th style="width:10%;text-align:center">Local transmission</th>
+          <th style="width:10%;">Method of surveillance</th>
+          <th style="width:20%;">Source</th>
+        </tr>
+          % for row in import_report:
+          <tr>
+              <td>${row["Country"]}</td>
+              <td style="text-align:center">${row["Earliest report"]}</td>
+              <td style="text-align:center">${row["Date local transmission"]}</td>
+              <td style="text-align:center">${row["Local transmission"]}</td>
+              <td>${row["Method of surveillance"]}</td>
+              <td><a href='${row["Source"]}' style="color:#86b0a6">${row["Source"]}</a></td>
           </tr>
-            % for row in import_report:
-            <tr>
-                <td>${row["Country"]}</td>
-                <td style="text-align:center">${row["Earliest report"]}</td>
-                <td style="text-align:center">${row["Date local transmission"]}</td>
-                <td style="text-align:center">${row["Local transmission"]}</td>
-                <td>${row["Method of surveillance"]}</td>
-                <td><a href='${row["Source"]}' style="color:#86b0a6">${row["Source"]}</a></td>
-            </tr>
-            % endfor
-          </table>
-
-        <div></div>
+          % endfor
+        </table>
+      </div>
         <div></div>
         <script>
           function myFunction(myInput, myTable) {

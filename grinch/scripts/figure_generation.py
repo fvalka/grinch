@@ -627,7 +627,7 @@ def cumulative_seqs_over_time(figdir, locations_to_dates,lineage):
     plt.savefig(os.path.join(figdir,f"Cumulative_sequence_count_over_time_{lineage}.svg"), format='svg', bbox_inches='tight')
 
 
-def plot_figures(world_map_file, figdir, metadata, lineages_of_interest,flight_data_b117,flight_data_b1351, table_b117, table_b1351):
+def plot_figures(world_map_file, figdir, metadata, lineages_of_interest,flight_data_b117,flight_data_b1351, table_b117, table_b1351, table_p1):
 
     world_map, countries = prep_map(world_map_file)
     conversion_dict2, omitted = prep_inputs()
@@ -645,9 +645,15 @@ def plot_figures(world_map_file, figdir, metadata, lineages_of_interest,flight_d
             flight_data = flight_data_b117
             relevant_table = table_b117
             central_loc = "United Kingdom"
-        
+        elif lineage == "P.1":
+            threshold = 0
+            flight_data = ""
+            relevant_table = table_p1
+            central_loc = "Brazil"
+
         info_dict = make_transmission_map(figdir, world_map, lineage, relevant_table)
-        flight_data_plot(figdir, flight_data,locations_to_dates,lineage, threshold, info_dict, central_loc)
+        if lineage != "P.1":
+            flight_data_plot(figdir, flight_data,locations_to_dates,lineage, threshold, info_dict, central_loc)
             
 
         plot_date_map(figdir, with_info, lineage, number_to_date)

@@ -22,10 +22,12 @@ def parse_args():
     parser.add_argument("--command",help="command string", dest="command")
     parser.add_argument("--template-b117",help="template mako html",dest="template_b117")
     parser.add_argument("--template-b1351",help="template mako html",dest="template_b1351")
+    parser.add_argument("--template-p1",help="template mako html",dest="template_p1")
     parser.add_argument("--report", help="output report file", dest="report")
     parser.add_argument("--time", help="timestamp", dest="time")
     parser.add_argument("--import-report-b117", help="import report", dest="import_report_b117")
     parser.add_argument("--import-report-b1351", help="import report", dest="import_report_b1351")
+    parser.add_argument("--import-report-p1", help="import report", dest="import_report_p1")
     return parser.parse_args()
 
 
@@ -77,7 +79,7 @@ def make_summary_data(metadata,fig_dir,snp_dict):
 
     summary_dict = collections.defaultdict(dict)
 
-    for lineage in ["B.1.351","B.1.1.7"]:
+    for lineage in ["B.1.351","B.1.1.7","P.1"]:
         summary_dict[lineage] = {"Lineage":lineage,
                                 "Country count":0,
                                 "Countries":collections.Counter(),
@@ -91,6 +93,7 @@ def make_summary_data(metadata,fig_dir,snp_dict):
     
     summary_dict["B.1.1.7"]["Likely origin"] = "United Kingdom"
     summary_dict["B.1.351"]["Likely origin"] = "South Africa"
+    summary_dict["P.1"]["Likely origin"] = "Brazil"
     # compile data for json
     with open(metadata,"r") as f:
         reader = csv.DictReader(f)
@@ -103,7 +106,7 @@ def make_summary_data(metadata,fig_dir,snp_dict):
                 travel_history = row["travel_history"]
                 lineage = row["lineage"]
 
-                if lineage != "" and lineage in ["B.1.1.7","B.1.351"]:
+                if lineage != "" and lineage in ["B.1.1.7","B.1.351","P.1"]:
                     
                     summary_dict[lineage]["Countries"][country]+=1
                     
@@ -236,6 +239,8 @@ def make_report():
     lineage_report(args.template_b1351, args.command, args.time, today, [summary_data[0]], args.report, 'B.1.351', flight_figure_b1351,args.import_report_b1351)
 
     lineage_report(args.template_b117, args.command, args.time, today, [summary_data[1]], args.report, 'B.1.1.7', flight_figure_b117,args.import_report_b117)
+
+    lineage_report(args.template_p1, args.command, args.time, today, [summary_data[2]], args.report, 'P.1', "",args.import_report_p1)
 
 if __name__ == "__main__":
     make_report()
