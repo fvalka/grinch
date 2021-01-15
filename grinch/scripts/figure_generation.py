@@ -536,7 +536,7 @@ def generate_rolling_frequency_count_data(figdir, locations_to_dates, country_da
         for day in (day_one + dt.timedelta(n) for n in range(1,count_date_range)):
             if day not in count_date_dict.keys():
                 count_date_dict[day] = 0
-        # if len(all_dates) > 15:
+        # if len(variant_dates) > 20:
         #     country_threshold.append(country.replace("_"," ").title())
         frequency_over_time[continent.replace("_"," ").title()] = OrderedDict(sorted(date_dict.items())) 
         counts_over_time[continent.replace("_"," ").title()] = OrderedDict(sorted(count_date_dict.items()))
