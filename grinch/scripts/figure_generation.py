@@ -505,7 +505,7 @@ def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earlies
         for day in (day_one + dt.timedelta(n) for n in range(1,count_date_range)):
             if day not in count_date_dict.keys():
                 count_date_dict[day] = 0
-        if len(all_dates) > 15:
+        if len(all_dates) > 20:
             country_threshold.append(country.replace("_"," ").title())
         frequency_over_time[country.replace("_"," ").title()] = OrderedDict(sorted(date_dict.items())) 
         counts_over_time[country.replace("_"," ").title()] = OrderedDict(sorted(count_date_dict.items()))
@@ -520,7 +520,7 @@ def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earlies
         
     num_colours = 1
     for i,v in frequency_over_time.items():
-        if len(v) > 15 and i in country_threshold:
+        if len(v) > 20 and i in country_threshold:
             num_colours+=1
 
     # muted_pal = sns.cubehelix_palette(n_colors=num_colours)
