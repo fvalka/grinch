@@ -473,23 +473,54 @@ def plot_frequency_new_sequences(figdir, locations_to_dates, country_new_seqs, l
 
     plt.savefig(os.path.join(figdir,f"Frequency_{lineage}_in_sequences_produced_since_first_new_variant_reported_per_country.svg"), format='svg', bbox_inches='tight')
 
-def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earliest_date, country_dates, lineage):
+
+def get_continent_mapping(continent_file):
+    country_to_continent = {}
+    with open(continent_file) as f:
+        next(f)
+        for l in f:
+            toks = l.strip("\n").split(",")
+            country_to_continent[toks[0]] = toks[1]
+
+    return country_to_continent
+
+def combine_into_continents(country_to_continent, locations_to_dates, country_dates):
+
+    continent_to_variant = defaultdict(list)
+    continent_to_all = defaultdict(list)
+    
+    for country, variant_dates in locations_to_dates.items():
+        if country != "UNITED_KINGDOM":
+            continent_to_variant[country_to_continent[country]].extend(variant_dates)
+        else:
+            continent_to_variant["UNITED_KINGDOM"] = variant_dates
+    
+    for country, all_dates in country_dates.items():
+        if country != "UNITED_KINGDOM":
+            continent_to_all[country_to_continent[country]].extend(all_dates)
+        else:
+            continent_to_all["UNITED_KINGDOM"] = all_dates
+
+    return continent_to_variant, continent_to_all
+
+def generate_rolling_frequency_count_data(figdir, locations_to_dates, country_dates, country_to_continent, lineage):
+
+    continent_to_variant, continent_to_all = combine_into_continents(country_to_continent, locations_to_dates, country_dates)
 
     frequency_over_time = defaultdict(dict)
     counts_over_time = defaultdict(dict)
 
-    country_threshold = []
-    # muted_pal = sns.color_palette("muted")
-    for country, all_dates in locations_to_dates.items():#a dictionary with locations:[dates of variant sequences]
+    # country_threshold = []
+    for continent, variant_dates in continent_to_variant.items():#a dictionary with locations:[dates of variant sequences]
         
-        day_one = loc_to_earliest_date[country]
+        day_one = min(variant_dates)
         date_dict = {}
         count_date_dict = {}
         
-        overall_counts = Counter(country_dates[country]) #counter of all sequences since the variant was first sampled in country
-        voc_counts = Counter(all_dates) #so get a counter of variant sequences
+        overall_counts = Counter(continent_to_all[continent]) #counter of all sequences since the variant was first sampled in continent
+        voc_counts = Counter(variant_dates) #so get a counter of variant sequences
 
-        for i in all_dates: #looping through all of the dates with a variant on
+        for i in variant_dates: #looping through all of the dates with a variant on
             day_frequency = voc_counts[i]/overall_counts[i]
             date_dict[i] = day_frequency #key=date, value=frequency on that day
 
@@ -505,23 +536,38 @@ def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earlies
         for day in (day_one + dt.timedelta(n) for n in range(1,count_date_range)):
             if day not in count_date_dict.keys():
                 count_date_dict[day] = 0
-        if len(all_dates) > 15:
-            country_threshold.append(country.replace("_"," ").title())
-        frequency_over_time[country.replace("_"," ").title()] = OrderedDict(sorted(date_dict.items())) 
-        counts_over_time[country.replace("_"," ").title()] = OrderedDict(sorted(count_date_dict.items()))
-    print("Country threshold",country_threshold)
-    frequency_df_dict = defaultdict(list)
+        # if len(all_dates) > 15:
+        #     country_threshold.append(country.replace("_"," ").title())
+        frequency_over_time[continent.replace("_"," ").title()] = OrderedDict(sorted(date_dict.items())) 
+        counts_over_time[continent.replace("_"," ").title()] = OrderedDict(sorted(count_date_dict.items()))
     
+    # print("Country threshold",country_threshold)
+    frequency_df_dict = defaultdict(list)
     for k,v in frequency_over_time.items(): #key=country, value=dict of dates to frequencies
         for k2, v2 in v.items():
-            frequency_df_dict['country'].append(k)
+            frequency_df_dict['continent'].append(k)
             frequency_df_dict["date"].append(k2)
             frequency_df_dict["frequency"].append(v2)
-        
-    num_colours = 1
-    for i,v in frequency_over_time.items():
-        if len(v) > 15 and i in country_threshold:
-            num_colours+=1
+    frequency_df = pd.DataFrame(frequency_df_dict)        
+
+    count_df_dict = defaultdict(list)
+    for k,v in counts_over_time.items():#key=country, value=dict of dates to counts
+        for k2, v2 in v.items():
+            count_df_dict['continent'].append(k)
+            count_df_dict["date"].append(k2)
+            count_df_dict["count"].append(v2)
+    count_df = pd.DataFrame(count_df_dict)
+
+    return frequency_over_time, counts_over_time, frequency_df, count_df
+
+def plot_count_and_frequency_rolling(figdir,locations_to_dates, country_dates, country_to_continent, lineage):
+
+    frequency_over_time, counts_over_time, frequency_df, count_df = generate_rolling_frequency_count_data(figdir, locations_to_dates, country_dates, country_to_continent, lineage)
+
+    # num_colours = 1
+    # for i,v in frequency_over_time.items():
+    #     if len(v) > 15 and i in country_threshold:
+    #         num_colours+=1
 
     # muted_pal = sns.cubehelix_palette(n_colors=num_colours)
     muted_pal = sns.color_palette(palette=["#52495A","#557B86","#B88F89","#E1998A",
@@ -530,53 +576,42 @@ def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earlies
                                         "#982029"])
 
 
-    frequency_df = pd.DataFrame(frequency_df_dict)
-
     fig, ax = plt.subplots(figsize=(8,3))
     c = 0
     for i,v in frequency_over_time.items():
-        if len(v) > 10 and i in country_threshold:#so we do this for countries with more than ten days between the first variant sequence and last variant sequence
-            c +=1
-            relevant = frequency_df.loc[frequency_df["country"] == i]
-            y = relevant['frequency'].rolling(7).mean()    
-            x = list(frequency_df.loc[frequency_df["country"] == i]["date"])
+        #if len(v) > 10 and i in country_threshold:#so we do this for countries with more than ten days between the first variant sequence and last variant sequence
+        c +=1
+        relevant = frequency_df.loc[frequency_df["continent"] == i]
+        y = relevant['frequency'].rolling(7).mean()    
+        x = list(frequency_df.loc[frequency_df["continent"] == i]["date"])
 
-            plt.plot(x,y, label = i, color=muted_pal[c],linewidth=2)
-            [ax.spines[loc].set_visible(False) for loc in ['top','right']]
-            plt.xticks(rotation=90)
+        plt.plot(x,y, label = i, color=muted_pal[c],linewidth=2)
+        [ax.spines[loc].set_visible(False) for loc in ['top','right']]
+        plt.xticks(rotation=90)
 
     plt.ylim(bottom=0)
     plt.legend(frameon=False,fontsize=8)
     plt.ylabel("Frequency (7 day rolling average)")
     plt.xlabel("Date")
 
-    plt.savefig(os.path.join(figdir,f"Rolling_average_{lineage}_frequency_per_country.svg"), format='svg', bbox_inches='tight')
+    plt.savefig(os.path.join(figdir,f"Rolling_average_{lineage}_frequency_per_continent.svg"), format='svg', bbox_inches='tight')
 
-    count_df_dict = defaultdict(list)
-    for k,v in counts_over_time.items():#key=country, value=dict of dates to counts
-        for k2, v2 in v.items():
-            count_df_dict['country'].append(k)
-            count_df_dict["date"].append(k2)
-            #count_df_dict["count"].append(np.log10(v2+1)) #pseudocounting to deal with zeroes
-            count_df_dict["count"].append(v2)
-
-    count_df = pd.DataFrame(count_df_dict)
+    
     fig, ax = plt.subplots(figsize=(8,3))
     c = 0
     for i,v in counts_over_time.items():
-        if len(v) > 10 and i in country_threshold:
-            c+=1
-            relevant = count_df.loc[count_df["country"] == i]
-            y = []
-            for value in relevant['count'].rolling(7).mean():
-                y.append(np.log10(value+1))
-            # y = relevant['count'].rolling(7).mean()    
-            x = list(count_df.loc[count_df["country"] == i]["date"])
+        # if len(v) > 10 and i in country_threshold:
+        c+=1
+        relevant = count_df.loc[count_df["continent"] == i]
+        y = []
+        for value in relevant['count'].rolling(7).mean():
+            y.append(np.log10(value+1))
+        x = list(count_df.loc[count_df["continent"] == i]["date"])
 
-            plt.plot(x,y, label = i, color=muted_pal[c],linewidth=2)
-            [ax.spines[loc].set_visible(False) for loc in ['top','right']]
-            plt.xticks(rotation=90)
-    
+        plt.plot(x,y, label = i, color=muted_pal[c],linewidth=2)
+        [ax.spines[loc].set_visible(False) for loc in ['top','right']]
+        plt.xticks(rotation=90)
+
     
     plt.legend(frameon=False,fontsize=8)
     plt.ylabel("Count (7 day rolling average)")
@@ -584,7 +619,7 @@ def plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earlies
     ax.set_ylim(bottom=0)
     yticks = ax.get_yticks()
     ax.set_yticklabels([(int(10**ytick)) for ytick in yticks])
-    plt.savefig(os.path.join(figdir,f"{lineage}_count_per_country.svg"), format='svg', bbox_inches='tight')
+    plt.savefig(os.path.join(figdir,f"{lineage}_count_per_continent.svg"), format='svg', bbox_inches='tight')
 
 
 def cumulative_seqs_over_time(figdir, locations_to_dates,lineage):
@@ -627,9 +662,10 @@ def cumulative_seqs_over_time(figdir, locations_to_dates,lineage):
     plt.savefig(os.path.join(figdir,f"Cumulative_sequence_count_over_time_{lineage}.svg"), format='svg', bbox_inches='tight')
 
 
-def plot_figures(world_map_file, figdir, metadata, lineages_of_interest,flight_data_b117,flight_data_b1351, table_b117, table_b1351, table_p1):
+def plot_figures(world_map_file, figdir, metadata, continent_file, lineages_of_interest,flight_data_b117,flight_data_b1351, table_b117, table_b1351, table_p1):
 
     world_map, countries = prep_map(world_map_file)
+    country_to_continent = get_continent_mapping(continent_file)
     conversion_dict2, omitted = prep_inputs()
 
     for lineage in lineages_of_interest:
@@ -662,8 +698,7 @@ def plot_figures(world_map_file, figdir, metadata, lineages_of_interest,flight_d
         plot_bars_by_freq(figdir, locations_to_dates, country_new_seqs, loc_to_earliest_date,lineage)
         cumulative_seqs_over_time(figdir,locations_to_dates,lineage)
         plot_frequency_new_sequences(figdir, locations_to_dates, country_new_seqs, loc_to_earliest_date, lineage)
-        plot_rolling_frequency_and_counts(figdir, locations_to_dates, loc_to_earliest_date, country_dates, lineage)
-
+        plot_count_and_frequency_rolling(figdir,locations_to_dates, country_dates, country_to_continent, lineage)
 
 # plot_figures(args.map, args.figdir, args.metadata, lineages_of_interest, False)
 

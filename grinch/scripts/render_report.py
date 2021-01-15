@@ -160,8 +160,8 @@ def make_summary_data(metadata,fig_dir,snp_dict):
                         f"Map_of_{lineage}_sequence_counts.svg",
                         f"Sequence_count_per_country_{lineage}.svg",
                         f"Frequency_{lineage}_in_sequences_produced_since_first_new_variant_reported_per_country.svg",
-                        f"{lineage}_count_per_country.svg",
-                        f"Rolling_average_{lineage}_frequency_per_country.svg",
+                        f"{lineage}_count_per_continent.svg",
+                        f"Rolling_average_{lineage}_frequency_per_continent.svg",
                         f"Map_of_{lineage}_local_transmission.svg"
                         ]
 
