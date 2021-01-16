@@ -240,17 +240,12 @@ def plot_count_map(figdir, with_info, lineage):
 
     with_info = with_info.to_crs("EPSG:4326")
     with_info.plot(ax=ax, cmap=muted_pal, legend=False, column="number_of_sequences", 
-                    # legend_kwds={'bbox_to_anchor':(-.03, 1.05),'fontsize':7,'frameon':False},
                     missing_kwds={"color": "lightgrey","label": "No variant recorded"})
 
     
 
     ax.legend(handles=[dark,light,none],bbox_to_anchor=(-.03, 1.05),fontsize=8,frameon=False)
     ax.axis("off")
-
-    # colourbar = ax.get_figure().get_axes()[1]
-    # yticks = colourbar.get_yticks()
-    # colourbar.set_yticklabels([round(math.exp(ytick)) for ytick in yticks])
 
     plt.savefig(os.path.join(figdir,f"Map_of_{lineage}_sequence_counts.svg"), format='svg', bbox_inches='tight')
 
@@ -302,10 +297,6 @@ def flight_data_plot(figdir, flight_data,locations_to_dates,lineage, threshold, 
         for row in reader:
             if int(row["flights"]) > threshold:
                 data.append((row["country"], int(row["flights"])))
-                # if row["gisaidNumber"] == "" or row["gisaidNumber"] == "9999":
-                #     data.append((row["country"], int(row["flights"]), 0))
-                # else:
-                #     data.append((row["country"], int(row["flights"]), int(row["gisaidNumber"])))
 
     sorted_data = sorted(data, key=lambda x : x[1], reverse=True)
 
@@ -362,7 +353,6 @@ def flight_data_plot(figdir, flight_data,locations_to_dates,lineage, threshold, 
     colours = [muted_mapping[i] for i in x ]
     # print(colours)
     customPalette = sns.set_palette(sns.color_palette(colours))
-    # colours = [[0.9157923182358403, 0.7887382324108813, 0.762379547318096], [0.35236581054056426, 0.19374450047758163, 0.36385783424464163], 'white', 'white', 'lightgrey', [0.22670646986529738, 0.13274650666137483, 0.2712570360553994], 'white', 'white', 'white', [0.6000254545207635, 0.34357712853426287, 0.49642279322522603], 'white', [0.9157923182358403, 0.7887382324108813, 0.762379547318096], [0.9157923182358403, 0.7887382324108813, 0.762379547318096], 'white', 'white', 'white', 'white', [0.7912783609518846, 0.5423668589478735, 0.6004332530547714], 'white', [0.47646765006069514, 0.2608912893189593, 0.4358483640521266], 'white', 'lightgrey', 'white', 'white', 'white', 'white', 'white', 'white', 'white', 'white', 'white', 'white', [0.7045593173634487, 0.43636067561566483, 0.5471495749492405], 'white', 'white', 'white', 'white', 'white', [0.8624113337043101, 0.664860941446331, 0.6706114180923453], 'white']
     sns.barplot(x="flights", y="country", palette=customPalette, edgecolor=".8", dodge=False,data=df)
     plt.xlabel("Total Number of Passengers")
     plt.ylabel("Country")
@@ -547,7 +537,7 @@ def generate_rolling_frequency_count_data(figdir, locations_to_dates, country_da
             frequency_df_dict['continent'].append(k)
             frequency_df_dict["date"].append(k2)
             frequency_df_dict["frequency"].append(v2)
-    frequency_df = pd.DataFrame(frequency_df_dict)        
+    frequency_df = pd.DataFrame(frequency_df_dict)
 
     count_df_dict = defaultdict(list)
     for k,v in counts_over_time.items():#key=country, value=dict of dates to counts
@@ -569,7 +559,7 @@ def plot_count_and_frequency_rolling(figdir,locations_to_dates, country_dates, c
     #         num_colours+=1
 
     # muted_pal = sns.cubehelix_palette(n_colors=num_colours)
-    muted_pal = sns.color_palette(palette=["#947383","#96C6AD","#525886","#937252",
+    muted_pal = sns.color_palette(palette=["#417F7A","#947383","#96C6AD","#525886","#937252",
                                         "#D18CAD","#A4A86F","lightgrey",
                                         "#982029"])
 
@@ -579,7 +569,7 @@ def plot_count_and_frequency_rolling(figdir,locations_to_dates, country_dates, c
         #if len(v) > 10 and i in country_threshold:#so we do this for countries with more than ten days between the first variant sequence and last variant sequence
         c +=1
         relevant = frequency_df.loc[frequency_df["continent"] == i]
-        y = relevant['frequency'].rolling(7).mean()    
+        y = relevant['frequency'].rolling(5).mean()    
         x = list(frequency_df.loc[frequency_df["continent"] == i]["date"])
 
         plt.plot(x,y, label = i, color=muted_pal[c],linewidth=2)
