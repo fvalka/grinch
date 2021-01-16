@@ -556,7 +556,16 @@
         % endfor
         
         <div></div>
-        
+        <h3><strong>Figure 9</strong> | Air traffic from Brazil by destination</h3>              
+        <p>The number of ticketed origin-to-destination journeys from Braziliann airports to countries outside Brazil during October 2020.</p> 
+        <p>Colours indicate numbers of published genomes of P.1 deposited on GISAID. Grey bars indicate countries that have reported the presence of the variant but have not yet published P.1 sequences on GISAID. White bars indicate countries with no reports of B.1.351.</p> 
+        <p>Flight data come from the International Air Transportation Association that capture anonymized, passenger-level flight itinerary data, comprising both commercial flights and scheduled charter flights. These data account for ~90% of global air travel volumes, with the remaining volumes modelled using market intelligence. We report data from destinations including >100 passengers.</p>
+        <p>Note that flight data reflects final-destination on a booked journey, we cannot account for instances where two separate tickets were purchased. Also, this data will not reflect volume of traffic over land or other modes of transport.</p>
+        <p>Data from Kamran Khan, Isaac Bogoch, Alexander Watts, Oliver Pybus, Moritz Kraemer</p>
+          <div class=figure-container>
+            ${flight_figure}
+        </div>
+        <br>
       <h3><a id = "table2link"></a><strong>Table 2</strong> | Reported P.1 imports. <input class="searchbar" type="text" id="myInput2" onkeyup="myFunction('myInput2','myTable2')" placeholder="Search for country..." title="searchbar"></h3>
       <p><b>Country count:</b> ${len(import_report)}
       <table class="table table-striped"  id="myTable2">

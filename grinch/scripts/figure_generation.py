@@ -274,7 +274,7 @@ def plot_bars(figdir, locations_to_dates, lineage):
         y.append(np.log10(count))
         x.append(location.replace("_", " ").title())
 
-    fig, ax = plt.subplots(1,1, figsize=(8,3), frameon=False)
+    fig, ax = plt.subplots(1,1, figsize=(10,3), frameon=False)
 
     plt.bar(x,y,color="#86b0a6")
 
@@ -410,7 +410,7 @@ def plot_bars_by_freq(figdir, locations_to_dates, country_new_seqs, loc_to_earli
 
     muted_pal = sns.cubehelix_palette(as_cmap=True)
 
-    fig, ax = plt.subplots(1,1, figsize=(8,3), frameon=False)
+    fig, ax = plt.subplots(1,1, figsize=(10,3), frameon=False)
     
     sns.barplot(x="Country", y="Count", data=df, dodge=False, palette=muted_pal(df["Frequency"]))
     plt.colorbar(cm.ScalarMappable(cmap=muted_pal),  shrink=0.5)
@@ -444,7 +444,7 @@ def plot_frequency_new_sequences(figdir, locations_to_dates, country_new_seqs, l
         text_label_dict[country.replace("_"," ").title()] = f"{len(all_dates)}/{total}"
 
 
-    fig, ax = plt.subplots(figsize=(8,3))
+    fig, ax = plt.subplots(figsize=(10,3))
 
     sort = {k: v for k, v in sorted(voc_frequency.items(), key=lambda item: item[1], reverse=True)}
 
@@ -536,8 +536,7 @@ def generate_rolling_frequency_count_data(figdir, locations_to_dates, country_da
         for day in (day_one + dt.timedelta(n) for n in range(1,count_date_range)):
             if day not in count_date_dict.keys():
                 count_date_dict[day] = 0
-        # if len(variant_dates) > 20:
-        #     country_threshold.append(country.replace("_"," ").title())
+
         frequency_over_time[continent.replace("_"," ").title()] = OrderedDict(sorted(date_dict.items())) 
         counts_over_time[continent.replace("_"," ").title()] = OrderedDict(sorted(count_date_dict.items()))
     
@@ -570,13 +569,11 @@ def plot_count_and_frequency_rolling(figdir,locations_to_dates, country_dates, c
     #         num_colours+=1
 
     # muted_pal = sns.cubehelix_palette(n_colors=num_colours)
-    muted_pal = sns.color_palette(palette=["#52495A","#557B86","#B88F89","#E1998A",
-                                        "#EB7E83","#178B76","#A56327","#C77939",
-                                        "#DBAF64","#5398B7","#A6C4CF","#D19C2C",
+    muted_pal = sns.color_palette(palette=["#947383","#96C6AD","#525886","#937252",
+                                        "#D18CAD","#A4A86F","lightgrey",
                                         "#982029"])
 
-
-    fig, ax = plt.subplots(figsize=(8,3))
+    fig, ax = plt.subplots(figsize=(10,3))
     c = 0
     for i,v in frequency_over_time.items():
         #if len(v) > 10 and i in country_threshold:#so we do this for countries with more than ten days between the first variant sequence and last variant sequence
@@ -597,7 +594,7 @@ def plot_count_and_frequency_rolling(figdir,locations_to_dates, country_dates, c
     plt.savefig(os.path.join(figdir,f"Rolling_average_{lineage}_frequency_per_continent.svg"), format='svg', bbox_inches='tight')
 
     
-    fig, ax = plt.subplots(figsize=(8,3))
+    fig, ax = plt.subplots(figsize=(10,3))
     c = 0
     for i,v in counts_over_time.items():
         # if len(v) > 10 and i in country_threshold:
@@ -644,7 +641,7 @@ def cumulative_seqs_over_time(figdir, locations_to_dates,lineage):
     epiweek_counts = Counter(epiweek_lst)
     sorted_epiweeks = OrderedDict(sorted(epiweek_counts.items()))
 
-    fig, ax1 = plt.subplots(1,1,figsize=(8,3))
+    fig, ax1 = plt.subplots(1,1,figsize=(10,3))
 
     ax1.bar(list(sorted_epiweeks.keys()), list(sorted_epiweeks.values()), color="#86b0a6", width=5)
     ax2 = ax1.twinx()
@@ -662,7 +659,7 @@ def cumulative_seqs_over_time(figdir, locations_to_dates,lineage):
     plt.savefig(os.path.join(figdir,f"Cumulative_sequence_count_over_time_{lineage}.svg"), format='svg', bbox_inches='tight')
 
 
-def plot_figures(world_map_file, figdir, metadata, continent_file, lineages_of_interest,flight_data_b117,flight_data_b1351, table_b117, table_b1351, table_p1):
+def plot_figures(world_map_file, figdir, metadata, continent_file, lineages_of_interest,flight_data_b117,flight_data_b1351,flight_data_p1, table_b117, table_b1351, table_p1):
 
     world_map, countries = prep_map(world_map_file)
     country_to_continent = get_continent_mapping(continent_file)
@@ -682,14 +679,14 @@ def plot_figures(world_map_file, figdir, metadata, continent_file, lineages_of_i
             relevant_table = table_b117
             central_loc = "United Kingdom"
         elif lineage == "P.1":
-            threshold = 0
-            flight_data = ""
+            threshold = 5
+            flight_data = flight_data_p1
             relevant_table = table_p1
             central_loc = "Brazil"
 
         info_dict = make_transmission_map(figdir, world_map, lineage, relevant_table)
-        if lineage != "P.1":
-            flight_data_plot(figdir, flight_data,locations_to_dates,lineage, threshold, info_dict, central_loc)
+        
+        flight_data_plot(figdir, flight_data,locations_to_dates,lineage, threshold, info_dict, central_loc)
             
 
         plot_date_map(figdir, with_info, lineage, number_to_date)

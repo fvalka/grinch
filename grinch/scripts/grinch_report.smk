@@ -8,7 +8,8 @@ output_prefix = config["output_prefix"]
 rule all:
     input:
         config["outdir"] + "/2/lineages.metadata.csv",
-        os.path.join(config["outdir"],"report", f"{output_prefix}_B.1.1.7.html")
+        os.path.join(config["outdir"],"report", f"{output_prefix}_B.1.1.7.html"),
+        config["outdir"] + "/2/lineages_data.json"
 
 rule gisaid_process_json:
     input:
@@ -149,7 +150,7 @@ rule render_report:
         report_b1351 = os.path.join(config["outdir"],"report", f"{output_prefix}_B.1.351.html"),
         report_p1 = os.path.join(config["outdir"],"report", f"{output_prefix}_P.1.html")
     run:
-        fig_gen.plot_figures(config["world_map_file"], config["figdir"], input.metadata, input.continent_file, config["lineages_of_interest"],config["flight_data_b117"],config["flight_data_b1351"],config["import_report_b117"],config["import_report_b1351"],config["import_report_p1"])
+        fig_gen.plot_figures(config["world_map_file"], config["figdir"], input.metadata, input.continent_file, config["lineages_of_interest"],config["flight_data_b117"],config["flight_data_b1351"],config["flight_data_p1"],config["import_report_b117"],config["import_report_b1351"],config["import_report_p1"])
 
         shell(
         """

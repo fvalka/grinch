@@ -126,7 +126,7 @@ def make_summary_data(metadata,fig_dir,snp_dict):
 
     flight_figure_b117 = get_svg_as_string(fig_dir,"Air_traffic_by_destination_B.1.1.7.svg")
     flight_figure_b1351 = get_svg_as_string(fig_dir,"Air_traffic_by_destination_B.1.351.svg")
-
+    flight_figure_p1 = get_svg_as_string(fig_dir,"Air_traffic_by_destination_P.1.svg")
     for lineage in summary_dict:
         fig_count = 0
         travel = summary_dict[lineage]["Travel history"]
@@ -182,7 +182,7 @@ def make_summary_data(metadata,fig_dir,snp_dict):
         rows.append(summary_dict[lineage])
     for row in rows:
         print(row["Lineage"]) 
-    return rows,flight_figure_b117,flight_figure_b1351
+    return rows,flight_figure_b117,flight_figure_b1351,flight_figure_p1
 
 def parse_import_data(import_report):
     import_data = []
@@ -232,7 +232,7 @@ def make_report():
         lineage,snps = i.split("=")
         snp_dict[lineage]= snps.replace(";","<br> ")
 
-    summary_data, flight_figure_b117,flight_figure_b1351 = make_summary_data(args.metadata,args.figdir,snp_dict)
+    summary_data, flight_figure_b117,flight_figure_b1351,flight_figure_p1 = make_summary_data(args.metadata,args.figdir,snp_dict)
 
     today = date.today()
 
@@ -240,7 +240,7 @@ def make_report():
 
     lineage_report(args.template_b117, args.command, args.time, today, [summary_data[1]], args.report, 'B.1.1.7', flight_figure_b117,args.import_report_b117)
 
-    lineage_report(args.template_p1, args.command, args.time, today, [summary_data[2]], args.report, 'P.1', "",args.import_report_p1)
+    lineage_report(args.template_p1, args.command, args.time, today, [summary_data[2]], args.report, 'P.1',flight_figure_p1,args.import_report_p1)
 
 if __name__ == "__main__":
     make_report()
