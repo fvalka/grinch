@@ -203,7 +203,13 @@ def update_pages():
     
     child_dict = get_child_dict(lineages)
     with open(f"{website_dir}/lineages.md","w") as fall:
-        fall.write(f"---\nlayout: go_to_page\ntitle: 'Go to lineage:'\nchildren: {sort_lineages(list(lineages.keys()))}\n---\n")
+        lineage_all = [i for i in lineages.keys() if not i.startswith("*")]
+        sorted_all = sort_lineages(lineage_all)
+        lineage_old = [i for i in lineages.keys() if i.startswith("*")]
+        sorted_old = sort_lineages(lineage_old)
+        for i in sorted_old:
+            sorted_all.append(i)
+        fall.write(f"---\nlayout: go_to_page\ntitle: 'Go to lineage:'\nchildren: {sorted_all}\n---\n")
     for lineage in lineages:
         if not lineage.startswith("*"):
             if lineage =="A":
