@@ -14,6 +14,8 @@ setup(name='grinch',
                 "grinch/scripts/make_chunks.py",
                 "grinch/scripts/grinchfunks.py",
                 "grinch/scripts/render_report.py",
+                "grinch/scripts/update_website.py",
+                "grinch/scripts/grinch_runner.sh",
                 "grinch/scripts/figure_generation.py"],
       package_data={"grinch":["data/*"]},
       install_requires=[
