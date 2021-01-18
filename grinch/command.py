@@ -96,7 +96,9 @@ def main(sysargs = sys.argv[1:]):
     lineages = ["B.1.1.7","B.1.351","P.1"]
     config["lineages_of_interest"] = lineages
     
-    gfunk.get_snps_of_interest(config)
+    if not "snps" in config:
+        sys.stderr("Please provide keyword snps in config file.")
+        sys.exit(-1)
 
     template_b117 = pkg_resources.resource_filename('grinch', 'data/html_template_b117.mako')
     template_b1351 = pkg_resources.resource_filename('grinch', 'data/html_template_b1351.mako')
