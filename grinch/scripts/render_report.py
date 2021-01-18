@@ -25,6 +25,7 @@ def parse_args():
     parser.add_argument("--template-p1",help="template mako html",dest="template_p1")
     parser.add_argument("--report", help="output report file", dest="report")
     parser.add_argument("--time", help="timestamp", dest="time")
+    parser.add_argument("--captions",help="caption info",dest="captions")
     parser.add_argument("--import-report-b117", help="import report", dest="import_report_b117")
     parser.add_argument("--import-report-b1351", help="import report", dest="import_report_b1351")
     parser.add_argument("--import-report-p1", help="import report", dest="import_report_p1")
@@ -74,7 +75,7 @@ def get_svg_as_string(fig_dir,fig_name):
 
     return fig_string
 
-def make_summary_data(metadata,fig_dir,snp_dict):
+def make_summary_data(metadata,fig_dir,snp_dict,caption_dict):
     # add lineages and sub lineages into a dict with verity's summary information about each lineage
 
     summary_dict = collections.defaultdict(dict)
@@ -231,6 +232,8 @@ def make_report():
     for i in snp_list:
         lineage,snps = i.split("=")
         snp_dict[lineage]= snps.replace(";","<br> ")
+
+    caption_dict = make_caption_dict(args.captions)
 
     summary_data, flight_figure_b117,flight_figure_b1351,flight_figure_p1 = make_summary_data(args.metadata,args.figdir,snp_dict)
 
