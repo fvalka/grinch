@@ -29,6 +29,9 @@ def parse_args():
     parser.add_argument("--import-report-b117", help="import report", dest="import_report_b117")
     parser.add_argument("--import-report-b1351", help="import report", dest="import_report_b1351")
     parser.add_argument("--import-report-p1", help="import report", dest="import_report_p1")
+    parser.add_argument("--raw-data-b117", help="raw data", dest="raw_data_b117")
+    parser.add_argument("--raw-data-b1351", help="raw data", dest="raw_data_b1351")
+    parser.add_argument("--raw-data-p1", help="raw data", dest="raw_data_p1")
     return parser.parse_args()
 
 
@@ -200,13 +203,28 @@ def parse_import_data(import_report):
             import_data.append(row_data)
     return import_data
 
-def lineage_report(template, command, time, today, data, report_stem, lineage, flight_figure,import_report):
+def parse_raw_data(raw_data_csv):
+    raw_data = []
+    with open(raw_data_csv, "r") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            row_data = {"Country": row["Country"],
+                        "Earliest sequence": row["earliest_date"],
+                        "Number of variant sequences": row["number_of_sequences"],
+                        "Total sequences since first variant sequence": row["Total sequences since first report"]
+                        }
+            raw_data.append(row_data)
+    return raw_data
+    
+
+def lineage_report(template, command, time, today, data, report_stem, lineage, flight_figure,import_report,raw_data_csv):
     mytemplate = Template(filename=template)
     buf = StringIO()
 
     import_data = parse_import_data(import_report)
+    raw_data = parse_raw_data(raw_data_csv)
 
-    ctx = Context(buf, command = command, timestamp = time, date = today, version = __version__, summary_data = data, lineage_data = [lineage],flight_figure=flight_figure,import_report=import_data)
+    ctx = Context(buf, command = command, timestamp = time, date = today, version = __version__, summary_data = data, lineage_data = [lineage],flight_figure=flight_figure,import_report=import_data, raw_data=raw_data)
 
     try:
         mytemplate.render_context(ctx)
@@ -239,11 +257,11 @@ def make_report():
 
     today = date.today()
 
-    lineage_report(args.template_b1351, args.command, args.time, today, [summary_data[0]], args.report, 'B.1.351', flight_figure_b1351,args.import_report_b1351)
+    lineage_report(args.template_b1351, args.command, args.time, today, [summary_data[0]], args.report, 'B.1.351', flight_figure_b1351,args.import_report_b1351, args.raw_data_b1351)
 
-    lineage_report(args.template_b117, args.command, args.time, today, [summary_data[1]], args.report, 'B.1.1.7', flight_figure_b117,args.import_report_b117)
+    lineage_report(args.template_b117, args.command, args.time, today, [summary_data[1]], args.report, 'B.1.1.7', flight_figure_b117,args.import_report_b117, args.raw_data_b117)
 
-    lineage_report(args.template_p1, args.command, args.time, today, [summary_data[2]], args.report, 'P.1',flight_figure_p1,args.import_report_p1)
+    lineage_report(args.template_p1, args.command, args.time, today, [summary_data[2]], args.report, 'P.1',flight_figure_p1,args.import_report_p1, args.raw_data_p1)
 
 if __name__ == "__main__":
     make_report()

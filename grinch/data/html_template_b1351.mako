@@ -606,6 +606,47 @@
             }
           }
           </script>
+
+        <h3><a id = "table3link"></a><strong>Table 3</strong> | Raw data for figures in the report. <input class="searchbar" type="text" id="myInput3" onkeyup="myFunction('myInput3','myTable3')" placeholder="Search for country..." title="searchbar"></h3>
+      <table class="table table-striped"  id="myTable3">
+        <tr class="header">
+          <th style="width:30%;">Country</th>
+          <th style="width:20%;text-align:center">Earliest sequence</th>
+          <th style="width:20%;text-align:center">Number of variant sequences</th>
+          <th style="width:10%;text-align:center">Total sequences since first variant sequence</th>
+        </tr>
+          % for row in raw_data:
+          <tr>
+              <td>${row["Country"]}</td>
+              <td style="text-align:center">${row["Earliest sequence"]}</td>
+              <td style="text-align:center">${row["Number of variant sequences"]}</td>
+              <td style="text-align:center">${row["Total sequences since first variant sequence"]}</td>
+          </tr>
+          % endfor
+        </table>
+      </div>
+        <div></div>
+        <script>
+          function myFunction(myInput, myTable) {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById(myInput);
+            filter = input.value.toUpperCase();
+            table = document.getElementById(myTable);
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+              td = tr[i].getElementsByTagName("td")[0];
+              if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                  tr[i].style.display = "";
+                } else {
+                  tr[i].style.display = "none";
+                }
+              }       
+            }
+          }
+          </script>
+          
     <footer class="page-footer">
       <div class="container-fluid text-right text-md-right">
         <hr>

@@ -75,7 +75,7 @@ def prep_inputs():
 
     return conversion_dict2, omitted
 
-def make_dataframe(metadata, conversion_dict2, omitted, lineage_of_interest, countries, world_map):
+def make_dataframe(metadata, conversion_dict2, omitted, lineage_of_interest, figdir, countries, world_map):
 
     locations_to_dates = defaultdict(list)
     country_to_new_country = {}
@@ -131,14 +131,14 @@ def make_dataframe(metadata, conversion_dict2, omitted, lineage_of_interest, cou
     for country, dates in locations_to_dates.items():        
         df_dict["admin"].append(country.upper().replace(" ","_"))
         df_dict["earliest_date"].append(min(dates))
-        df_dict["number_of_sequences"].append(np.log(len(dates)))
+        df_dict["log_number_of_sequences"].append(np.log10(len(dates)))
+        df_dict["number_of_sequences"].append(len(dates))
         df_dict["date_number"].append(date_to_number[min(dates)])
 
         
     info_df = pd.DataFrame(df_dict)
 
     with_info = world_map.merge(info_df, how="outer")
-
 
     with open(metadata) as f:
         data = csv.DictReader(f)    
@@ -154,8 +154,23 @@ def make_dataframe(metadata, conversion_dict2, omitted, lineage_of_interest, cou
                         country_new_seqs[new_country] += 1
                     country_dates[new_country].append(date)
 
+    intermediate_dict = defaultdict(list)
+    for place, total in country_new_seqs.items():
+        intermediate_dict["admin"].append(place)
+        intermediate_dict["Total sequences since first report"].append(total)
+        
+    intermediate_df = pd.DataFrame(intermediate_dict)
+
+    new_info = info_df.merge(intermediate_df)
+    new_row = []
+    for i in new_info["admin"]:
+        new_row.append(i.replace("_"," ").title())
+    new_info["Country"] = new_row
+
+    new_info.to_csv(f'{figdir}/{lineage_of_interest}_raw_data.csv')
 
     return with_info, locations_to_dates, country_new_seqs, loc_to_earliest_date, country_dates, number_to_date
+    
 
 def make_transmission_map(figdir, world_map, lineage, relevant_table):
 
@@ -239,7 +254,7 @@ def plot_count_map(figdir, with_info, lineage):
     fig, ax = plt.subplots(figsize=(10,10))
 
     with_info = with_info.to_crs("EPSG:4326")
-    with_info.plot(ax=ax, cmap=muted_pal, legend=False, column="number_of_sequences", 
+    with_info.plot(ax=ax, cmap=muted_pal, legend=False, column="log_number_of_sequences", 
                     missing_kwds={"color": "lightgrey","label": "No variant recorded"})
 
     
@@ -656,7 +671,7 @@ def plot_figures(world_map_file, figdir, metadata, continent_file, lineages_of_i
     conversion_dict2, omitted = prep_inputs()
 
     for lineage in lineages_of_interest:
-        with_info, locations_to_dates, country_new_seqs, loc_to_earliest_date, country_dates, number_to_date = make_dataframe(metadata, conversion_dict2, omitted, lineage, countries, world_map)
+        with_info, locations_to_dates, country_new_seqs, loc_to_earliest_date, country_dates, number_to_date = make_dataframe(metadata, conversion_dict2, omitted, lineage, figdir, countries, world_map)
 
         if lineage == "B.1.351":
             threshold = 300
