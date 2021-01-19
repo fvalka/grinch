@@ -77,7 +77,6 @@ def get_outdir(outdir_arg,output_prefix_arg,cwd,config):
     d = today.strftime("%Y-%m-%d")
     config["today"] = f"{d}"
 
-    config["output_prefix"] = f"{output_prefix}"
 
     if not os.path.exists(outdir):
         os.mkdir(outdir)
