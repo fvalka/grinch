@@ -43,12 +43,12 @@ def generate_constellations(infile1, infile2, outfile):
                 call = read[variant]
                 barcode = call_to_barcode(variant, call, variant_dict)
                 if barcode:
-                    red_barcode.append(barcode)
-            constellations.append({'read_name':read_name, 'constellation':''.join(read_barcode)})
+                    read_barcode.append(barcode)
+            constellations.append({'sequence_name':read_name, 'constellation':''.join(read_barcode)})
 
 
     with open(outfile, 'w') as out_handle:
-        f = csv.DictWriter(out_handle, fieldnames=['read_name','constellation'])
+        f = csv.DictWriter(out_handle, fieldnames=['sequence_name','constellation'])
         f.writeheader()
         f.writerows(constellations)
 

@@ -148,7 +148,7 @@ rule parse_variants_input:
 rule type_variants:
     input:
         fasta = rules.gisaid_unify_headers.output.fasta
-        reference =
+        reference = config["reference"]
         variants = rules.parse_variants_input.output
     output:
         temp(config["outdir"] + "/2/typed_variants.csv")
