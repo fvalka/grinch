@@ -76,11 +76,8 @@ def get_outdir(outdir_arg,output_prefix_arg,cwd,config):
     
     d = today.strftime("%Y-%m-%d")
     config["today"] = f"{d}"
-    output_prefix = config["output_prefix"]
-    split_prefix = output_prefix.split("_")
-    if split_prefix[-1].startswith("20"):
-        output_prefix = '_'.join(split_prefix[:-1])
-    config["output_prefix"] = f"{output_prefix}_{d}"
+
+    config["output_prefix"] = f"{output_prefix}"
 
     if not os.path.exists(outdir):
         os.mkdir(outdir)
