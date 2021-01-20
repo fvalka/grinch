@@ -14,9 +14,9 @@ cd /home/shared/lineages-website && git pull
 
 python /home/shared/grinch/grinch/scripts/update_website.py --website-dir /home/shared/lineages-website -m /home/shared/$TODAY/2/lineages.metadata.csv -n /home/shared/pangoLEARN/pangoLEARN/supporting_information/lineage_notes.txt -o /home/shared/lineages-website/_data/lineage_data.json
 
-cp /home/shared/$TODAY/report/global_report_B.1.1.7.html /home/shared/lineages-website/_data/global_report.B.1.1.7.html
-cp /home/shared/$TODAY/report/global_report_B.1.351.html /home/shared/lineages-website/_data/global_report.B.1.351.html
-cp /home/shared/$TODAY/report/global_report_P.1.html /home/shared/lineages-website/_data/global_report.P.1.html
+cp /home/shared/$TODAY/report/global_report_B.1.1.7.html /home/shared/lineages-website/global_report.B.1.1.7.html
+cp /home/shared/$TODAY/report/global_report_B.1.351.html /home/shared/lineages-website/global_report.B.1.351.html
+cp /home/shared/$TODAY/report/global_report_P.1.html /home/shared/lineages-website/global_report.P.1.html
 
 cp /home/shared/$TODAY/figures/Map_of_B.1.351_local_transmission.svg /home/shared/lineages-website/assets/images/Map_of_B.1.351_local_transmission.svg
 cp /home/shared/$TODAY/figures/Map_of_B.1.1.7_local_transmission.svg /home/shared/lineages-website/assets/images/Map_of_B.1.1.7_local_transmission.svg
