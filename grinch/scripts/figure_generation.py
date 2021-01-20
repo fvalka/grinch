@@ -84,25 +84,34 @@ def make_dataframe(metadata, conversion_dict2, omitted, lineage_of_interest, fig
 
     with open(metadata) as f:
         data = csv.DictReader(f)
+        
+        cut_off = dt.datetime.strptime("2020-09-01", "%Y-%m-%d").date()
         for seq in data:
-            if seq["lineage"] == lineage_of_interest:
-                seq_country = seq["country"].upper().replace(" ","_")
-                if seq_country in conversion_dict2:
-                    new_country = conversion_dict2[seq_country]
-                else:
-                    if seq_country not in omitted:
-                        new_country = seq_country
-                    else:
-                        new_country = ""
-                
-                if new_country not in countries and new_country != "":
+            try:
+                sample_date = dt.datetime.strptime(seq["sample_date"], "%Y-%m-%d").date()
+                if sample_date < cut_off:
                     pass
-                elif new_country != "":
-                    try:
-                        locations_to_dates[new_country].append(dt.datetime.strptime(seq["sample_date"], "%Y-%m-%d").date())
-                    except:
-                        pass
-                country_to_new_country[seq_country] = new_country
+                else:
+                    if seq["lineage"] == lineage_of_interest:
+                        seq_country = seq["country"].upper().replace(" ","_")
+                        if seq_country in conversion_dict2:
+                            new_country = conversion_dict2[seq_country]
+                        else:
+                            if seq_country not in omitted:
+                                new_country = seq_country
+                            else:
+                                new_country = ""
+                        
+                        if new_country not in countries and new_country != "":
+                            pass
+                        elif new_country != "":
+                            try:
+                                locations_to_dates[new_country].append(dt.datetime.strptime(seq["sample_date"], "%Y-%m-%d").date())
+                            except:
+                                pass
+                        country_to_new_country[seq_country] = new_country
+            except:
+                pass
     
 
     loc_to_earliest_date = {}

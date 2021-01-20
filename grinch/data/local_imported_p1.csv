@@ -2,3 +2,4 @@ Country,earliest_report,date_local,imported_local,method_surveillance,Source
 Brazil,2020-12-15,2020-12-15,1,community_sequencing,https://virological.org/t/genomic-characterisation-of-an-emergent-sars-cov-2-lineage-in-manaus-preliminary-findings/586
 Japan,2021-01-12,,0,travellers,https://www.niid.go.jp/niid/en/2019-ncov-e/10108-covid19-33-en.html
 Italy,2021-01-17,,0,travellers,https://www.business-standard.com/article/current-affairs/italy-bans-flights-from-brazil-after-covid-variant-detected-in-4-passengers-121011700080_1.html
+South Korea,2021-01-10,,0,travellers,GISAID
