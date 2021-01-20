@@ -6,6 +6,8 @@ TODAY=$(date +%F_%H%M%S)
 echo "running $TODAY report"
 cd /home/shared/grinch && git pull #gets any updates to the reports in the data directory
 
+python setup.py install
+
 grinch -t 40 -i /home/shared/grinch/grinch/data/config.yaml --outdir "/home/shared/$TODAY" --output-prefix global_report
 
 cd /home/shared/lineages-website && git pull
