@@ -214,7 +214,7 @@
         float:right
       }
       .figure-container{
-      max-height: 700px;
+      max-height: 900px;
       background-size: contain;
       margin: 0 auto;
     }
