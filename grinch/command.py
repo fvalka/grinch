@@ -109,6 +109,7 @@ def main(sysargs = sys.argv[1:]):
     config["template_b1351"] = template_b1351
     config["template_p1"] = template_p1
     
+    config["reference"] = pkg_resources.resource_filename('grinch', 'data/reference.fasta')
     omitted = pkg_resources.resource_filename('grinch', 'data/omitted.csv')
     config["omitted"] = omitted
 
