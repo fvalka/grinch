@@ -173,9 +173,9 @@ rule generate_constellation_strings:
     shell:
         """
         generate_constellation.py \
-            --variants_csv {input.variants:q} \
-            --in_calls {input.variant_calls:q} \
-            --out_csv {output:q} &> {log}
+            --variant-ref {input.variants:q} \
+            --variant-calls {input.variant_calls:q} \
+            --out-file {output[0]:q} &> {log}
         """
 
 rule grab_metadata:
