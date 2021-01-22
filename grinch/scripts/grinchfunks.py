@@ -76,11 +76,7 @@ def get_outdir(outdir_arg,output_prefix_arg,cwd,config):
     
     d = today.strftime("%Y-%m-%d")
     config["today"] = f"{d}"
-    output_prefix = config["output_prefix"]
-    split_prefix = output_prefix.split("_")
-    if split_prefix[-1].startswith("20"):
-        output_prefix = '_'.join(split_prefix[:-1])
-    config["output_prefix"] = f"{output_prefix}_{d}"
+
 
     if not os.path.exists(outdir):
         os.mkdir(outdir)
@@ -145,8 +141,8 @@ def add_arg_to_config(key,arg,config):
     if arg:
         config[key] = arg
 
-def get_snps_of_interest(config):
-    config["snps"] = "B.1.351=aa:orf1ab:K1655N;aa:S:D215G;aa:S:E484K;aa:S:N501Y;snp:C23664T,B.1.1.7=aa:orf1ab:T1001I;aa:orf1ab:A1708D;aa:orf1ab:I2230T;del:11288:9;del:21765:6;del:21991:3;aa:S:N501Y;aa:S:A570D;aa:S:P681H;aa:S:T716I;aa:S:S982A;aa:S:D1118H;aa:Orf8:Q27*;aa:Orf8:R52I;aa:Orf8:Y73C;aa:N:D3L;aa:N:S235F"
+# def get_snps_of_interest(config):
+#     config["snps"] = "B.1.351=aa:orf1ab:K1655N;aa:S:D215G;aa:S:E484K;aa:S:N501Y;snp:C23664T,B.1.1.7=aa:orf1ab:T1001I;aa:orf1ab:A1708D;aa:orf1ab:I2230T;del:11288:9;del:21765:6;del:21991:3;aa:S:N501Y;aa:S:A570D;aa:S:P681H;aa:S:T716I;aa:S:S982A;aa:S:D1118H;aa:Orf8:Q27*;aa:Orf8:R52I;aa:Orf8:Y73C;aa:N:D3L;aa:N:S235F"
 
     pkg_resources.resource_filename('grinch', 'data/omitted.csv')
 def colour(text, text_colour):

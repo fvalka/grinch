@@ -238,7 +238,10 @@ rule render_report:
         --time {config[timestamp]:q} \
         --import-report-b117 {config[import_report_b117]:q} \
         --import-report-b1351 {config[import_report_b1351]:q} \
-        --import-report-p1 {config[import_report_p1]:q}
+        --import-report-p1 {config[import_report_p1]:q} \
+        --raw-data-b117 {config[outdir]}/figures/B.1.1.7_raw_data.csv \
+        --raw-data-b1351 {config[outdir]}/figures/B.1.351_raw_data.csv \
+        --raw-data-p1 {config[outdir]}/figures/P.1_raw_data.csv
         """)
         print(gfunk.green("Grinch report written to:") + f"{output.report_b117} and {output.report_b1351}")
         
