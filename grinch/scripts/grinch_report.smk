@@ -2,6 +2,7 @@ import pandas as pd
 from Bio import SeqIO
 import figure_generation as fig_gen
 import grinchfunks as gfunk
+import csv
 
 output_prefix = config["output_prefix"]
 
@@ -121,28 +122,25 @@ rule parse_variants_input:
     output:
         temp(config["outdir"] + "/2/search_variants.csv")
     run:
-    """
-    import csv
+        def record_to_variant(record):
+            if record["type"] == 'deletion':
+                return "del:%s:%s" %(record["nuc_location"],record["variants"])
+            elif record["type"] == 'replacement':
+                return "aa:%s" %record["id"]
+            return None
 
-    def record_to_variant(record):
-        if record["type"] == 'deletion':
-            return "del:%s:%s" %(record["nuc_location"],record["variants"])
-        elif record["type"] == 'replacement':
-            return "aa:%s" %record["id"]
-        return None
+        variant_dict = {}
+        with open(input[0], 'r') as in_handle:
+            reader = csv.DictReader(in_handle)
+            for r in reader:
+                variant = record_to_variant(r)
+                order = int(r["barcode_pos"])
+                variant_dict[order] = variant
 
-    variant_dict = {}
-    with open(input, 'r') as in_handle:
-        reader = csv.DictReader(in_handle)
-        for r in reader:
-            variant = record_to_variant(r)
-            order = int(r["barcode_pos"])
-            variant_dict[order] = variant
+        with open(output[0], 'w') as out_handle:
+            for i in range(len(variant_dict)):
+                out_handle.write("%s\n" %variant_dict[i])
 
-    with open(output, 'w') as out_handle:
-        for i in range(len(variant_dict)):
-            out_handle.write("%s\n" %variant_dict[i])
-    """
 
 
 rule type_variants:
@@ -173,12 +171,12 @@ rule generate_constellation_strings:
     log:
         config["outdir"] + "/logs/2_generate_constellation_strings.log"
     shell:
-    """
-    generate_constellation.py \
-        --variants_csv {input.variants:q} \
-        --in_calls {input.variant_calls:q} \
-        --out_csv {output:q} &> {log}
-    """
+        """
+        generate_constellation.py \
+            --variants_csv {input.variants:q} \
+            --in_calls {input.variant_calls:q} \
+            --out_csv {output:q} &> {log}
+        """
 
 rule grab_metadata:
     input:
