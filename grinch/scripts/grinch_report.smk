@@ -184,7 +184,7 @@ rule grab_metadata:
         lineages = rules.parallel_pangolin.output.lineages,
         constellations = rules.generate_constellation_strings.output
     output:
-        tmp_metadata = temp(config["outdir"] + "/2/lineages.metadata.tmp.csv")
+        tmp_metadata = temp(config["outdir"] + "/2/lineages.metadata.tmp.csv"),
         metadata = config["outdir"] + "/2/lineages.metadata.csv"
     log:
         config["outdir"] + "/logs/2_grab_metadata.log"
