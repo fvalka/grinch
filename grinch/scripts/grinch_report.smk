@@ -145,8 +145,8 @@ rule parse_variants_input:
 
 rule type_variants:
     input:
-        fasta = rules.gisaid_unify_headers.output.fasta
-        reference = config["reference"]
+        fasta = rules.gisaid_unify_headers.output.fasta,
+        reference = config["reference"],
         variants = rules.parse_variants_input.output
     output:
         temp(config["outdir"] + "/2/typed_variants.csv")
@@ -164,7 +164,7 @@ rule type_variants:
 
 rule generate_constellation_strings:
     input:
-        variants = config["variants_csv"]
+        variants = config["variants_csv"],
         variant_calls = rules.type_variants.output
     output:
         config["outdir"] + "/2/constellation_report.csv"
