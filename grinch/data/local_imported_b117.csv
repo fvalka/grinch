@@ -27,7 +27,7 @@ Portugal,2020-12-27,2020-12-28,1,travellers,https://www.sapo.pt/noticias/atualid
 Singapore,2020-12-23,,0,travellers,https://www.straitstimes.com/singapore/singapore-confirms-1-imported-patient-with-potentially-more-contagious-covid-19-strain
 South Korea,2020-12-22,,0,travellers,https://www.dailymail.co.uk/news/article-9091763/S-Korea-accelerate-virus-vaccine-efforts-U-K-variant-detected.html
 Spain,2020-12-26,2021-01-08,1,,https://www.theguardian.com/world/2020/dec/26/spain-and-sweden-report-cases-of-uk-covid-variant
-Sweden,2020-12-20,,0,,https://www.svt.se/nyheter/lokalt/sormland/fall-av-den-brittiska-virusvarianten-upptack-i-sormland
+Sweden,2020-12-20,2021-01-19,1,community_sequencing,https://www.folkhalsomyndigheten.se/smittskydd-beredskap/utbrott/aktuella-utbrott/nya-varianter-av-sars-cov-2/; https://www.svt.se/nyheter/lokalt/sormland/fall-av-den-brittiska-virusvarianten-upptack-i-sormland
 Taiwan,2020-12-30,,0,travellers,https://www.scmp.com/news/china/science/article/3115884/taiwan-reports-its-first-case-mutant-covid-19-strain-found
 United Arab Emirates,2020-12-29,,0,travellers,https://www.khaleejtimes.com/coronavirus-pandemic/new-covid-strain-in-uae-all-we-know-so-far
 Switzerland,2020-12-24,2021-01-05,1,,https://www.bag.admin.ch/bag/fr/home/das-bag/aktuell/medienmitteilungen.msg-id-81829.html | https://www.swissinfo.ch/eng/more-variant-covid-19-carriers-detected-in-switzerland/46262070
@@ -60,3 +60,4 @@ Morocco,2021-01-18,,0,travellers,https://www.dailysabah.com/world/mid-east/moroc
 Poland,2021-01-20,2021-01-20,1,community_sequencing,https://twitter.com/genXone_SA/status/1351990700259368965
 Trinidad and Tobago,2021-01-21,,0,travellers,https://twitter.com/CVFCarrington/status/1352569760278523906/photo/1
 Latvia,2021-01-12,,0,travellers,https://bnn-news.com/four-more-cases-of-british-covid-19-variation-found-in-latvia-220958
+United Arab Emirates,2020-11-16,,0,travellers,https://www.reuters.com/article/us-health-coronavirus-emirates/uae-reports-limited-number-of-cases-of-new-coronavirus-variant-idUKKBN2931RJ?edition-redirect=uk
