@@ -96,18 +96,6 @@ def main(sysargs = sys.argv[1:]):
     lineages = ["B.1.1.7","B.1.351","P.1"]
     config["lineages_of_interest"] = lineages
     
-
-    template_b117 = pkg_resources.resource_filename('grinch', 'data/html_template_b117.mako')
-    template_b1351 = pkg_resources.resource_filename('grinch', 'data/html_template_b1351.mako')
-    template_p1 = pkg_resources.resource_filename('grinch', 'data/html_template_p1.mako')
-
-    command = " ".join(sys.argv[1:])
-    config["command"] = f"grinch {command}"
-
-    config["template_b117"] = template_b117
-    config["template_b1351"] = template_b1351
-    config["template_p1"] = template_p1
-    
     config["reference"] = pkg_resources.resource_filename('grinch', 'data/reference.fasta')
     config["lineage_info"] = pkg_resources.resource_filename('grinch', 'data/lineage_info.json')
     omitted = pkg_resources.resource_filename('grinch', 'data/omitted.csv')
